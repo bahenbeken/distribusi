@@ -1,0 +1,302 @@
+{% extends "header.html" %}
+{% block content %}
+<style>
+canvas {
+    -moz-user-select: none;
+    -webkit-user-select: none;
+    -ms-user-select: none;
+}
+</style>
+<script src="{{base_url}}assets/lib/chartjs/dist/Chart.bundle.js"></script>
+<script src="{{base_url}}assets/lib/chartjs/samples/utils.js"></script>
+<div class="box primary">
+
+    <header class="text-success">
+        <div class="icons"><i class="fa fa-dashboard"></i></div>
+        <h5>DASHBOARD</h5>
+    </header>
+</div>
+<div class="row">
+    <div class="col-xs-12">
+        <div class="col-lg-6">
+            <div class="box">
+                <div class="body">
+                    <li class="label label-info">DATA INVESTOR TAHUN 2017</li>
+                    <canvas id="pie"></canvas>
+                </div>
+                <!-- /.body -->
+            </div>
+            <!-- /.box -->
+        </div>
+        <!-- /.col-lg-6 -->
+
+
+        <div class="col-lg-6">
+            <div class="box">
+                <div class="body">
+                    <li class="label label-info">DATA KEMITRAAN TAHUN 2017</li>
+                    <canvas id="polar"></canvas>            
+                </div>
+                <!-- /.body -->
+            </div>
+            <!-- /.box -->
+        </div>
+
+        <div class="col-lg-6">
+            <div class="box">
+                <div class="body">
+                    <li class="label label-info">DATA INVESTASI TAHUN 2017</li>
+                    <canvas id="bar"></canvas>            
+                </div>
+                <!-- /.body -->
+            </div>
+            <!-- /.box -->
+        </div>   
+
+        <div class="col-lg-6">
+            <div class="box">
+                <div class="body">
+                    <li class="label label-info">PENINGKATAN TAHUN 2017</li>
+                    <canvas id="line"></canvas>            
+                </div>
+                <!-- /.body -->
+            </div>
+            <!-- /.box -->
+        </div>       
+
+    </div>
+</div>
+
+
+<script>
+    var randomScalingFactor = function() {
+        return Math.round(Math.random() * 100);
+    };
+
+    /* Pie Chart */
+    var config = {
+        type: 'pie',
+        data: {
+            datasets: [{
+                data: [
+                    randomScalingFactor(),
+                    randomScalingFactor(),
+                    randomScalingFactor(),
+                    randomScalingFactor(),
+                    randomScalingFactor(),
+                ],
+                backgroundColor: [
+                    window.chartColors.red,
+                    window.chartColors.orange,
+                    window.chartColors.yellow,
+                    window.chartColors.green,
+                    window.chartColors.blue,
+                ],
+                label: 'Data'
+            }],
+            labels: [
+                "Red",
+                "Orange",
+                "Yellow",
+                "Green",
+                "Blue"
+            ]
+        },
+        options: {
+            responsive: true
+        }
+    };
+    /* End Pie Chart */
+
+
+    /* Polar Chart */
+    var chartColors = window.chartColors;
+    var color = Chart.helpers.color;
+    var configPolar = {
+        data: {
+            datasets: [{
+                data: [
+                    randomScalingFactor(),
+                    randomScalingFactor(),
+                    randomScalingFactor(),
+                    randomScalingFactor(),
+                    randomScalingFactor(),
+                ],
+                backgroundColor: [
+                    color(chartColors.red).alpha(0.5).rgbString(),
+                    color(chartColors.orange).alpha(0.5).rgbString(),
+                    color(chartColors.yellow).alpha(0.5).rgbString(),
+                    color(chartColors.green).alpha(0.5).rgbString(),
+                    color(chartColors.blue).alpha(0.5).rgbString(),
+                ],
+                label: 'Data' // for legend
+            }],
+            labels: [
+                "Red",
+                "Orange",
+                "Yellow",
+                "Green",
+                "Blue"
+            ]
+        },
+        options: {
+            responsive: true,
+            legend: {
+                position: 'right',
+            },
+            title: {
+                display: true,
+                text: 'Data'
+            },
+            scale: {
+              ticks: {
+                beginAtZero: true
+              },
+              reverse: false
+            },
+            animation: {
+                animateRotate: false,
+                animateScale: true
+            }
+        }
+    };
+    /* End Polar Chart */
+
+    /* Vertical Bar */
+    var MONTHS = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
+    var color = Chart.helpers.color;
+    var barChartData = {
+        labels: ["January", "February", "March", "April", "May", "June", "July"],
+        datasets: [{
+            label: 'Dataset 1',
+            backgroundColor: color(window.chartColors.red).alpha(0.5).rgbString(),
+            borderColor: window.chartColors.red,
+            borderWidth: 1,
+            data: [
+                randomScalingFactor(),
+                randomScalingFactor(),
+                randomScalingFactor(),
+                randomScalingFactor(),
+                randomScalingFactor(),
+                randomScalingFactor(),
+                randomScalingFactor()
+            ]
+        }, {
+            label: 'Dataset 2',
+            backgroundColor: color(window.chartColors.blue).alpha(0.5).rgbString(),
+            borderColor: window.chartColors.blue,
+            borderWidth: 1,
+            data: [
+                randomScalingFactor(),
+                randomScalingFactor(),
+                randomScalingFactor(),
+                randomScalingFactor(),
+                randomScalingFactor(),
+                randomScalingFactor(),
+                randomScalingFactor()
+            ]
+        }]
+
+    };
+    /* End Vertical Bar */
+
+
+    /* Start Line Chart */
+    var configLine = {
+        type: 'line',
+        data: {
+            labels: ["January", "February", "March", "April", "May", "June", "July"],
+            datasets: [{
+                label: "My First dataset",
+                backgroundColor: window.chartColors.red,
+                borderColor: window.chartColors.red,
+                data: [
+                    randomScalingFactor(),
+                    randomScalingFactor(),
+                    randomScalingFactor(),
+                    randomScalingFactor(),
+                    randomScalingFactor(),
+                    randomScalingFactor(),
+                    randomScalingFactor()
+                ],
+                fill: false,
+            }, {
+                label: "My Second dataset",
+                fill: false,
+                backgroundColor: window.chartColors.blue,
+                borderColor: window.chartColors.blue,
+                data: [
+                    randomScalingFactor(),
+                    randomScalingFactor(),
+                    randomScalingFactor(),
+                    randomScalingFactor(),
+                    randomScalingFactor(),
+                    randomScalingFactor(),
+                    randomScalingFactor()
+                ],
+            }]
+        },
+        options: {
+            responsive: true,
+            title:{
+                display:true,
+                text:'Data'
+            },
+            tooltips: {
+                mode: 'index',
+                intersect: false,
+            },
+            hover: {
+                mode: 'nearest',
+                intersect: true
+            },
+            scales: {
+                xAxes: [{
+                    display: true,
+                    scaleLabel: {
+                        display: true,
+                        labelString: 'Month'
+                    }
+                }],
+                yAxes: [{
+                    display: true,
+                    scaleLabel: {
+                        display: true,
+                        labelString: 'Value'
+                    }
+                }]
+            }
+        }
+    };
+    /* end Line Chart */
+
+    window.onload = function() {
+        var ctx = document.getElementById("pie").getContext("2d");
+        window.myPie = new Chart(ctx, config);
+
+        var polarElement = document.getElementById("polar");
+        window.myPolarArea = Chart.PolarArea(polarElement, configPolar);
+
+        var barElement = document.getElementById("bar").getContext("2d");
+        window.myBar = new Chart(barElement, {
+            type: 'bar',
+            data: barChartData,
+            options: {
+                responsive: true,
+                legend: {
+                    position: 'top',
+                },
+                title: {
+                    display: true,
+                    text: 'Data'
+                }
+            }
+        });
+
+        var lineElement = document.getElementById("line").getContext("2d");
+        window.myLine = new Chart(lineElement, configLine);
+    };
+
+    
+</script>
+{% endblock %}

@@ -1,0 +1,77 @@
+<!doctype html>
+<html>
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>DELTAGRO DISTRIBUTION </title>
+    <meta name="description" content="DELTAGRO - Sistem Distribusi">
+    <meta name="author" content="">
+    <meta name="msapplication-TileColor" content="#5bc0de" />
+    <link rel="shortcut icon" href="{{base_url}}assets/img/icon.png" />
+    <meta name="msapplication-TileImage" content="{{base_url}}assets/img/metis-tile.png" />
+    {% include 'header_plugins.html' %}
+ 
+    <style type="text/css">
+    .navbar-inverse {
+        background-color: #d2cfcf  !important;
+    }
+    html {
+        background-color: #C8C8C8 !important;
+    }
+    body {
+        margin-bottom: 0px !important;
+        padding: 12px !important;
+        background-color: #C8C8C8 !important;
+    }
+    </style>
+
+  </head>
+        <!-- <body class=" sidebar-left-mini menu-affix"> Menu Kecil di non aktifkan-->
+        <body class="menu-affix">
+            {% block content %}{% endblock %}
+            {{css_handle|raw}}       
+           
+
+            <script src="//cdnjs.cloudflare.com/ajax/libs/prism/0.0.1/prism.min.js"></script>
+            <script src="{{base_url}}assets/lib/bootstrap/js/bootstrap.js"></script>
+            <script src="{{base_url}}assets/lib/metismenu/metisMenu.js"></script>
+            <script src="{{base_url}}assets/lib/onoffcanvas/onoffcanvas.js"></script>
+            <script src="{{base_url}}assets/lib/screenfull/screenfull.js"></script>
+            <script src="{{base_url}}assets/js/core.js"></script>
+            <script src="{{base_url}}assets/js/app.js"></script>
+            <script type="text/javascript">
+                function openPopup(url)
+                {
+                   $.fancybox.open({
+                        href : url,
+                        type : 'iframe',
+                        helpers : {
+                            media: true
+                        },
+                        width: "90%",
+                        height: "98%",
+                        autoSize: false,
+                        scrolling: false
+                   });
+                }
+
+                function tableToExcel(table, name, filename) {
+                      let uri = 'data:application/vnd.ms-excel;base64,',
+                      template = '<html xmlns:o="urn:schemas-microsoft-com:office:office" xmlns:x="urn:schemas-microsoft-com:office:excel" xmlns="http://www.w3.org/TR/REC-html40"><title></title><head><!--[if gte mso 9]><xml><x:ExcelWorkbook><x:ExcelWorksheets><x:ExcelWorksheet><x:Name>{worksheet}</x:Name><x:WorksheetOptions><x:DisplayGridlines/></x:WorksheetOptions></x:ExcelWorksheet></x:ExcelWorksheets></x:ExcelWorkbook></xml><![endif]--><meta http-equiv="content-type" content="text/plain; charset=UTF-8"/></head><body><table>{table}</table></body></html>',
+                      base64 = function(s) { return window.btoa(decodeURIComponent(encodeURIComponent(s))) },         format = function(s, c) { return s.replace(/{(\w+)}/g, function(m, p) { return c[p]; })}
+
+                      if (!table.nodeType) table = document.getElementById(table)
+                      var ctx = {worksheet: name || 'Worksheet', table: table.innerHTML}
+
+                      var link = document.createElement('a');
+                      link.download = filename;
+                      link.href = uri + base64(format(template, ctx));
+                      link.click();
+              }
+            </script>
+            {% include 'footer_plugins.html' %}
+        </body>
+
+</html>

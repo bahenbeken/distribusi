@@ -1,0 +1,129 @@
+{% extends "header.html" %}
+{% block content %}
+<div class="col-md-12">
+  <div class="box primary">
+      <header class="text-success">
+          <div class="icons"><i class="fa fa-barcode"></i></div>
+          <h5>NO SERIES</h5>
+      </header>
+  </div>
+</div>
+
+
+
+<div class="col-md-12">
+        <form class="form-horizontal" action="" method="post" id="formsubmit">
+            <div class="col-lg-5">
+                    <div class="form-group">
+                        <label for="text1" class="control-label col-lg-4">Distributor Code: </label>
+                        <div class="col-lg-7">
+
+                            <select name="id_distributor" id="id_distributor" class="form-control">
+                                {% if session.userdata.sanitasDistDistributorID =="" %}
+                                <option value="0">UMUM</option>
+                                {% endif %}
+                                {% for dist in distributor %}
+                                <option value="{{dist.id}}" {% if id_distributor == dist.id %} selected {% endif %}>{{dist.code}} - {{dist.distributor_name}}</option>
+                                {% endfor %}
+                            </select>        
+                        </div>                
+                    </div>   
+                    
+            </div>
+            <input type="hidden" name="address" id="address"/>
+
+            <div class="col-lg-12">
+                <div class="form-group">
+                    <div class="col-lg-5">
+                        <button type="submit" class="btn btn-default-blue" ><i class="fa fa-filter"></i>&nbsp;Show Data</button>
+                    </div>
+                </div>
+            </div>
+        </form>
+</div>
+
+
+{% if id_distributor !="all" %}
+<div class="col-md-12">
+    <table id="dataList" class="display" cellspacing="0" width="100%">
+        <thead>
+            <tr>
+                <th>Distributor</th>
+                <th>Serial ID</th>
+                <th>Description</th>
+                <th>Prefix Char</th>
+                <th>Last Number</th>
+                <th>Edit Only</th>
+            </tr>
+            <tr>
+                <td>Distributor</td>
+                <td>Serial ID</td>
+                <td>Description</td>
+                <td>Prefix Char</td>
+                <td>Last Number</td>
+                <td>Edit Only</td>
+            </tr>
+        </thead>        
+    </table>
+</div>
+
+<script>
+$(document).ready(function() {
+    // Setup - add a text input to each footer cell
+    var x = 0;
+    $('#dataList thead tr:eq(1) td').each( function () {
+      var title = $(this).text();
+      if (!$(this).is(':last-child')) {
+        $(this).html( '<input type="text" style="color:#333" placeholder="Search '+title+'" />' );
+      }
+      else{
+        $(this).html("");
+      }
+
+  	} );
+
+  	// DataTable
+  	var table = $('#dataList').DataTable({
+        ajax: "{{ base_url }}masterdata/utility/listdatacode/{{id_distributor}}",  
+        columnDefs: [ {
+            "targets": -1,
+            "data": null,
+            "defaultContent": "<modify class='fa fa-pencil tips' title='Tombol untuk merubah data!'></modify>",
+            "width": "80px",
+        }],
+        "order": [[ 4, "desc" ]],
+        "bSortCellsTop": true,
+        "pageLenght" : 25,
+        "searching": true,
+        "aLengthMenu": [[25, 100, 200, -1], [25, 100, 200, "All"]]
+    });
+
+  	// Apply the search
+  	table.columns().every( function () {
+  		$('#dataList thead tr:eq(1) td input').on('keyup change', function () {
+        table.column($(this).parent().index() + ':visible').search(this.value).draw();
+      });
+    });
+
+    $('#dataList tbody').on('click', 'modify', function () {
+        var data = table.row($(this).parents('tr')).data();
+        openPopup("{{base_url}}masterdata/utility/formcode/"+data[5], "500px", "450px");
+    });
+
+    if($('.dataTables_empty').length){
+        $('.dataTables_empty').html("No data");
+    }    
+
+});
+</script>
+{% endif %}
+
+
+<script language="javascript">
+function distributorAction()
+{
+    return false;
+}
+
+</script>
+{% endblock %}

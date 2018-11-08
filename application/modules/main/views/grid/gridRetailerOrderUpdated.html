@@ -1,0 +1,296 @@
+{% extends "header.html" %}
+{% block content %}
+<div class="col-md-12">
+  <div class="box primary">
+      <header class="text-success">
+          <div class="icons"><i class="fa fa-cube"></i></div>
+          <h5>RETAILER UPDATED ORDER</h5>
+      </header>
+  </div>
+</div>
+<div class="col-md-12">
+  <div class="col-md-12">
+    <ul class="tab_menu">
+      <li onclick="clickThis(this, '-')">
+        All Order
+      </li>
+      <li onclick="clickThis(this, 'P')">
+        Pending Order
+      </li>
+      <li onclick="clickThis(this, 'N')">
+        Open Order
+      </li>
+      <li onclick="clickThis(this, 'Y')">
+        Closed Order
+      </li>
+      <li onclick="clickThis(this, 'C')">
+        Canceled Order
+      </li>
+    </ul>
+  </div>
+
+
+  <form class="form-horizontal" action="" method="post" id="formsubmit"  style="margin-bottom:50px;">
+      <input type="hidden" name="id" id="id" value="{{ edit.id }}">
+      <div class="col-lg-5">
+
+        <div class="form-group">
+            <label for="text1" class="control-label col-lg-4">Distributor</label>
+            <div class="col-lg-5" style="padding-right:0; margin-right:0;">
+              <input type="hidden" id="id_distributor" name="id_distributor" />
+              <input type="text" style="border-radius:5px 0px 0px 5px" class="form-control browseData" id="distributor_name" name="distributor_name" data-url="{{base_url}}main/popup/distributor.html" data-width="70%" data-height="70%" readonly>
+            </div>
+            <div class="col-lg-1" style="padding-left:0; margin-left:0">
+              <a href="#" class="btn btn-metis-5 btn-rect browseData" data-url="{{base_url}}main/popup/distributor.html" data-width="70%" data-height="70%"><i class="fa fa-search"></i></a>
+            </div>
+        </div>
+
+        <div class="form-group">
+            <label for="text1" class="control-label col-lg-4">Retailer</label>
+            <div class="col-lg-5" style="padding-right:0; margin-right:0;">
+              <input type="hidden" id="id_retailer" name="id_retailer" />
+              <input type="text" style="border-radius:5px 0px 0px 5px" class="form-control browseData" id="retailer_name" name="retailer_name" data-url="{{base_url}}main/popup/retailer.html" data-width="70%" data-height="70%" readonly>
+            </div>
+            <div class="col-lg-1" style="padding-left:0; margin-left:0">
+              <a href="#" class="btn btn-metis-5 btn-rect browseData" title="" data-url="{{base_url}}main/popup/retailer.html" data-width="70%" data-height="70%"><i class="fa fa-search"></i></a>
+            </div>
+        </div>
+
+        <div class="form-group">
+            <label for="text1" class="control-label col-lg-4">Booking Code</label>
+            <div class="col-lg-6">
+              <input type="text" class="form-control" id="booking_code" name="booking_code">
+            </div>
+        </div>
+
+        <div class="form-group">
+            <label for="text1" class="control-label col-lg-4">Order Date</label>
+            <div class="col-lg-3" style="padding-right:5px; margin-right:5px;">
+              <input type="text" class="form-control" id="start_date" name="start_date" style=" font-size:12px; padding:2px;" placeholder="From">
+            </div>
+
+            <div class="col-lg-3" style="padding-left:5px; margin-left:5px;">
+              <input type="text" class="form-control" id="end_date" name="end_date" style=" font-size:12px; padding:2px;"  placeholder="To">
+            </div>
+        </div>
+
+      </div>
+
+      <div class="col-lg-12">
+          <div class="form-group">
+              <div class="col-lg-5">
+                  <input type="button" class="btn btn-default" value="Filter" onclick="reloadGrid()">
+                  <input type="button" class="btn btn-lighter" value="Clear" onclick="resetFilter()">
+              </div>
+          </div>
+      </div>
+
+      </form>
+
+</div>
+
+<div class="col-md-12">
+
+
+  <div class="judul_sub">
+    <hr/>
+    <span class="label label-danger ">Caution! Double click on the row to see the detail transaction.</span>
+  </div>
+
+  <table id="dataList" class="display" cellspacing="0" width="100%">
+
+        <thead>
+
+          <tr>
+              <th>No.</th>
+              <th>Booking Code</th>
+              <th>Order Date</th>
+              <th>Sales Name</th>
+              <th>Distributor Name</th>
+              <th>Retailer Name</th>
+              <th style="text-align:left !important">Amount</th>
+              <th>Status</th>
+              <th>Reason</th>
+              <th>id</th>
+          </tr>
+          <tr>
+            <td>No.</td>
+            <td>Booking Code</td>
+            <td>Order Date</td>
+            <td>Sales Name</td>
+            <td>Distributor Name</td>
+            <td>Retailer Name</td>
+            <td>Amount</td>
+            <td>Status</td>
+            <td>Reason</td>
+            <td>id</td>
+          </tr>
+      </thead>
+
+  </table>
+
+</div>
+
+
+
+
+
+<script language="javascript">
+
+var orderVar = new Object();
+orderVar.orderType = '-';
+orderVar.idDistributor = '-';
+orderVar.idRetailer = '-';
+orderVar.bookingcode = '-';
+orderVar.startDate = '-';
+orderVar.endDate = '-';
+
+function reloadGrid() {
+
+  if($("#id_distributor").val() != "" ) {
+    orderVar.idDistributor = $("#id_distributor").val();
+  }
+  if($("#id_retailer").val() != "" ) {
+    orderVar.idRetailer = $("#id_retailer").val();
+  }
+  if($("#booking_code").val() != "" ) {
+    orderVar.bookingcode = $("#booking_code").val();
+  }
+  if($("#start_date").val() != "" ) {
+    orderVar.startDate = $("#start_date").val();
+  }
+  if($("#end_date").val() != "" ) {
+    orderVar.endDate = $("#end_date").val();
+  }
+
+  var url = "{{ base_url }}main/retailerorder/getdataupdatedorder/"+orderVar.orderType+"/"+orderVar.idDistributor+"/"+orderVar.idRetailer+"/"+orderVar.bookingcode+"/"+orderVar.startDate+"/"+orderVar.endDate;
+  $('#dataList').DataTable().ajax.url(url).load();
+}
+
+function resetFilter() {
+  var firstObj = $(".tab_menu li").first();
+  $(".tab_menu > li").removeClass("activeTab");
+  $(firstObj).addClass("activeTab");
+
+  $("#id_distributor").val('');
+  $("#distributor_name").val('');
+  $("#id_retailer").val('');
+  $("#retailer_name").val('');
+  $("#booking_code").val('');
+  $("#start_date").val('');
+  $("#end_date").val('');
+
+  orderVar.orderType = '-';
+  orderVar.idDistributor = '-';
+  orderVar.idRetailer = '-';
+  orderVar.bookingcode = '-';
+  orderVar.startDate = '-';
+  orderVar.endDate = '-';
+  var url = "{{ base_url }}main/retailerorder/getdataupdatedorder/"+orderVar.orderType+"/"+orderVar.idDistributor+"/"+orderVar.idRetailer+"/"+orderVar.bookingcode+"/"+orderVar.startDate+"/"+orderVar.endDate;
+  $('#dataList').DataTable().ajax.url(url).load();
+}
+
+function clickThis(obj, orderType){
+  $(".tab_menu > li").removeClass("activeTab");
+  $(obj).addClass("activeTab");
+
+  orderVar.orderType = orderType;
+  reloadGrid()
+}
+
+$(document).ready(function() {
+  var firstObj = $(".tab_menu li").first();
+  $(".tab_menu > li").removeClass("activeTab");
+  $(firstObj).addClass("activeTab");
+
+  var x = 0;
+  $('#dataList thead tr:eq(1) td').each( function () {
+    var title = $(this).text();
+    if (!$(this).is(':last-child') && !$(this).is(':first-child') ) {
+      $(this).html( '<input type="text" style="color:#333" placeholder="Search '+title+'" />' );
+    }
+    else{
+      $(this).html("");
+    }
+  } );
+
+  var table = $('#dataList').DataTable({
+    ajax: "{{ base_url }}main/retailerorder/getdataupdatedorder/"+orderVar.orderType+"/"+orderVar.idDistributor+"/"+orderVar.idRetailer+"/"+orderVar.bookingcode,
+    columnDefs: [ {
+        "targets": -1,
+        "visible": false,
+        "searchable": false
+    },
+    {
+        "targets": 6,
+        "className": "text-right",
+    }],
+    buttons: [
+        { extend: 'print', className: 'btn btn-metis-5 btn-xs btn-grad btn-rect', text:"<i class='fa fa-print'></i> Print" },
+        { extend: 'excel', className: 'btn btn-metis-5 btn-xs btn-grad btn-rect', text:"<i class='fa fa-file-excel-o'></i> Excel" }
+    ],
+    responsive: false,
+    colReorder: {
+        reorderCallback: function () {
+            console.log( 'callback' );
+        }
+    },
+    "language": {
+        "infoEmpty": "No records available - Got it?",
+    },
+    "aLengthMenu": [[25, 100, 200, -1], [25, 100, 200, "All"]],
+    "bSortCellsTop": true,
+    dom:"<'row' <'col-md-12'B>><'row'<'col-md-6 col-sm-12'l><'col-md-6 col-sm-12'f>r><'table-scrollable't><'row'<'col-md-5 col-sm-12'i><'col-md-7 col-sm-12'p>>",
+    "pageLength": 25,
+    "searching": true
+  });
+
+  table.columns().every( function () {
+    $('#dataList thead tr:eq(1) td input').on('keyup change', function () {
+      table.column($(this).parent().index() + ':visible').search(this.value).draw();
+    });
+  });
+
+  $('#dataList tbody').on('dblclick', 'tr', function () {
+    var data = table.row(this).data();
+    openDetail("{{base_url}}main/retailerorder/detailupdatedorder/"+data[9]);
+  });
+
+});
+
+if ($('#start_date').length) {
+  $('#start_date').datepicker({
+      dateFormat: 'yy-mm-dd',
+      yearRange: "c-5:c+5",
+      changeYear: true,
+      changeMonth: true,
+      prevText: '',
+      nextText: ''
+  });
+}
+
+if ($('#end_date').length) {
+  $('#end_date').datepicker({
+      dateFormat: 'yy-mm-dd',
+      yearRange: "c-5:c+5",
+      changeYear: true,
+      changeMonth: true,
+      prevText: '',
+      nextText: ''
+  });
+}
+
+function openDetail(src){
+  $.fancybox.open({
+     href : src,
+     type : 'iframe',
+     width: "50%",
+     height: "45%",
+     autoSize: false,
+     scrolling: true,
+     padding: "0px"
+  });
+}
+
+</script>
+{% endblock %}

@@ -1,0 +1,122 @@
+{% extends "header.html" %}
+{% block content %}
+<div class="col-md-12">
+  <div class="box primary">
+      <header class="text-success">
+          <div class="icons"><i class="fa fa-database"></i></div>
+          <h5>SALES PERSON</h5>
+      </header>
+  </div>
+</div>
+
+<div class="col-md-12">
+    <a href="{{base_url}}masterdata/salesperson/form.html" class="btn btn-default-blue openPopup addButton" data-width="400px" data-height="400px"><i class="fa fa-plus"></i>&nbsp;Tambah Data</a>
+    <table id="dataList" class="display" cellspacing="0" width="100%">
+        <thead>
+            <tr>
+                <th>No.</th>
+                <th>Kode Sales</th>
+                <th>Distributor</th>
+                <th>Nama Sales</th>
+                <th>Process</th>
+            </tr>
+            <tr>
+                <td>No.</td>
+                <td>Kode Sales</td>
+                <td>Distributor</td>
+                <td>Nama Sales</td>
+                <td>Proses</td>
+            </tr>
+        </thead>        
+    </table>
+</div>
+
+<script language="javascript">
+$(document).ready(function() {
+    // Setup - add a text input to each footer cell
+    var x = 0;
+    $('#dataList thead tr:eq(1) td').each( function () {
+      var title = $(this).text();
+      if (!$(this).is(':last-child') && !$(this).is(':first-child') ) {
+        $(this).html( '<input type="text" style="color:#333" placeholder="Search '+title+'" />' );
+      }
+      else{
+        $(this).html("");
+      }
+
+  	} );
+
+  	// DataTable
+  	var table = $('#dataList').DataTable({
+        ajax: "{{ base_url }}masterdata/salesperson/listdata.html",  
+        columnDefs: [ {
+                "targets": 0,
+                "visible": false,
+                "searchable": false
+            },{
+            "targets": -1,
+            "data": null,
+            "defaultContent": "<modify class='fa fa-pencil'></modify> <remove class='fa fa-trash'></remove>",
+            "width": "80px",
+        }],
+        "order": [[ 4, "desc" ]],
+        "bSortCellsTop": true,
+        "pageLenght" : 25,
+        "searching": true,
+        "aLengthMenu": [[25, 100, 200, -1], [25, 100, 200, "All"]]
+    });
+
+  	// Apply the search
+  	table.columns().every( function () {
+  		$('#dataList thead tr:eq(1) td input').on('keyup change', function () {
+        table.column($(this).parent().index() + ':visible').search(this.value).draw();
+      });
+    });
+
+    $('#dataList tbody').on('click', 'modify', function () {
+        var data = table.row($(this).parents('tr')).data();
+        openPopup("{{base_url}}masterdata/salesperson/form/"+data[4], "400px", "450px");
+    });
+
+    $('#dataList tbody').on('click', 'remove', function () {
+        var data = table.row($(this).parents('tr')).data();
+        confirmThis("{{base_url}}masterdata/salesperson/deletedata/"+data[4], "Anda yakin ingin menghapus data tersebut?");
+    });
+
+    if($('.dataTables_empty').length){
+        $('.dataTables_empty').html("No data");
+    }
+
+    if ($('#formsubmit').length) {
+        $("#formsubmit").validate({
+          rules: {
+            name: {
+              required: true,
+              minlength: 3
+            },
+            telephone: {
+              required: true,
+              digits: true
+            },
+            address: {
+              required: true,
+              minlength: 3
+            }
+          }
+        });
+    }    
+
+});
+
+if ($('.datePicker').length) {
+  $('.datePicker').datepicker({
+      dateFormat: 'yyy-mm-dd',
+      yearRange: "2015:2030",
+      changeYear: true,
+      changeMonth: true,
+      prevText: '',
+      nextText: ''
+  });
+}
+</script>
+{% endblock %}

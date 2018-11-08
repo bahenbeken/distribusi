@@ -1,0 +1,102 @@
+{% extends "headerblank.html" %}
+{% block content %}
+<div class="col-md-12">
+    <div class="popup-title"><i class="fa fa-database"></i>&nbsp;Browse Distributor</div>
+</div>
+
+<div class="col-md-12">
+    <label class="label label-default">
+        Klik pada baris untuk memilih salah satu!
+    </label>
+</div>
+
+<div class="col-md-12">
+    <table id="dataList" class="display" cellspacing="0" width="100%">
+        <thead>
+            <tr>
+                <th>No.</th>
+                <th>Code</th>
+                <th>ASM Name</th>
+                <th>Distributor Name</th>
+                <th>Address</th>
+                <th>Process</th>
+            </tr>
+            <tr>
+                <td>No.</td>
+                <td>Code</td>
+                <td>ASM Name</td>
+                <td>Distributor Name</td>
+                <td>Address</td>
+                <td>Process</td>
+            </tr>
+        </thead>        
+    </table>
+</div>
+
+<script language="javascript">
+
+$(document).ready(function() {
+    $('#dataList tbody tr').tooltip();
+    // Setup - add a text input to each footer cell
+    var x = 0;
+    $('#dataList thead tr:eq(1) td').each( function () {
+        var title = $(this).text();
+        if (!$(this).is(':last-child') && !$(this).is(':first-child') ) {
+            $(this).html( '<input type="text" style="color:#333" placeholder="Search '+title+'" />' );
+        }
+        else{
+            $(this).html("");
+        }
+    });
+    
+    var table = $('#dataList').DataTable({
+        ajax: "{{ base_url }}masterdata/distributor/listdata.html",  
+        columnDefs: [ 
+        {
+            "targets": 0,
+            "data": null,
+            "visible": false,
+            "searchable": false
+        },{
+            "targets": -1,
+            "data": null,
+            "visible": false,
+            "searchable": false
+        }],
+        "order": [[ 5, "desc" ]],
+        "bSortCellsTop": true,
+        "pageLenght" : 25,
+        "searching": true,
+        "aLengthMenu": [[25, 100, 200, -1], [25, 100, 200, "All"]],
+        "fnDrawCallback": function( oSettings ) {
+            $('#dataList tbody tr').each( function() {
+                this.setAttribute('title', "Klik pada baris untuk memilih!");
+                this.setAttribute('style', "cursor:pointer");
+            }).tooltip();
+        },
+    }); 
+
+  	// Apply the search
+  	table.columns().every( function () {
+  		$('#dataList thead tr:eq(1) td input').on('keyup change', function () {
+            table.column($(this).parent().index() + ':visible').search(this.value).draw();
+        });
+    });    
+    $('#dataList tbody').on('click', 'tr', function () {
+        var dt = table.row(this).data();
+        window.parent.$("#id_distributor").val(dt[5]);
+        window.parent.$("#code").val(dt[1]);        
+        window.parent.$("#distributor_name").val(dt[3]);
+        window.parent.$("#address").val(dt[4]);
+        window.parent.distributorAction();
+        window.parent.$.fancybox.close();
+        //openDetail(dt["ID"], dt["Start Period"], dt["End Period"]);
+    });
+
+    if($('.dataTables_empty').length){
+        $('.dataTables_empty').html("No data");
+    }
+});
+
+</script>
+{% endblock %}

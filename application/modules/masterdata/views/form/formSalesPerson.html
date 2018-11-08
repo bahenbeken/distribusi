@@ -1,0 +1,89 @@
+{% extends "headerblank.html" %}
+{% block content %}
+<div class="col-md-12">
+    <div class="col-md-12">
+        <div class="popup-title"><i class="fa fa-database"></i>&nbsp;Sales Person</div>
+    </div>
+</div>
+
+<div class="col-md-12">
+  <form class="form-horizontal" action="" method="post" id="formsubmit">
+      <input type="hidden" name="id" id="id" value="{{ edit.id }}">
+      <div class="col-lg-12">
+
+        <div class="form-group">
+            <label for="text1" class="control-label col-lg-4">Kode Sales</label>
+            <div class="col-lg-2">
+              <input type="text" class="form-control" id="code" name="code" value="{{edit.code}}" {% if edit.id !='' %} readonly {%endif%} required>
+            </div>
+        </div>
+
+        <div class="form-group">
+            <label for="text1" class="control-label col-lg-4">Distributor</label>
+            <div class="col-lg-5">
+                <select name="id_distributor" id="id_distributor" class="form-control">
+                    {% for dist in distributor %}
+                    <option value="{{dist.id}}" {% if edit.id_distributor == dist.id %} selected {% endif %}>{{ dist.code }} - {{dist.distributor_name}}</option>
+                    {% endfor %}
+                </select>
+            </div>
+        </div>
+
+        <div class="form-group">
+            <label for="text1" class="control-label col-lg-4">Nama Sales</label>
+            <div class="col-lg-7">
+                <input type="text" class="form-control" id="sales_name" name="sales_name" value="{{edit.sales_name}}" required>
+            </div>
+        </div>
+
+      </div>
+
+      <div class="col-lg-12">
+          <div class="form-group">
+              <div class="col-lg-5">
+                  <input type="submit" class="btn btn-default-blue" value="Simpan">
+                  <input type="button" class="btn btn-default-grey" value="Batal" onclick="javascript:window.parent.$.fancybox.close()">
+              </div>
+          </div>
+      </div>
+
+      </form>
+
+</div>
+
+
+
+
+<script language="javascript">
+
+
+$(document).ready(function() {
+    
+
+    if ($('#formsubmit').length) {
+        $("#formsubmit").validate({
+          rules: {
+            code: {
+              required: true,
+              minlength: 3,
+              maxlength: 10
+            },
+            sales_name: {
+              required: true,
+              minlength: 3,
+              maxlength: 10
+            }
+          }
+        });
+    }
+
+
+    {% if session.flashdata.type == 'success' %}
+        window.parent.$('#dataList').DataTable().ajax.reload();
+    {% endif %}
+    
+
+});
+
+</script>
+{% endblock %}

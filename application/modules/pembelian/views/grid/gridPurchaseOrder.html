@@ -1,0 +1,134 @@
+{% extends "header.html" %}
+{% block content %}
+<div class="col-md-12">
+  <div class="box primary">
+      <header class="text-success">
+          <div class="icons"><i class="fa fa-check-square"></i></div>
+          <h5>PURCHASE ORDER</h5>
+      </header>
+  </div>
+</div>
+
+<div class="col-md-12">
+    <a href="{{base_url}}pembelian/purchaseorder/form.html" class="btn btn-default-blue openPopup tips addButton" title='Buat baru' data-width="100%" data-height="100%"><i class="fa fa-plus"></i>&nbsp;Transaksi Baru</a>
+    <table id="dataList" class="display" cellspacing="0" width="100%">
+        <thead>
+            <tr>
+                <th>No.</th>
+                <th>Distributor Code</th>
+                <th>Distributor Name</th>
+                <th>No. PO</th>
+                <th>Amount</th>
+                <th>Tanggal PO</th>
+                <th>Status</th>
+                <th>Process</th>
+            </tr>
+            <tr>
+                <td>No.</td>
+                <td>Distributor Code</td>
+                <td>Distributor Name</td>
+                <td>No. PO</td>
+                <td>Amount</td>
+                <td>Tanggal PO</td>
+                <td>Status</td>
+                <td>Process</td>
+            </tr>
+        </thead>        
+    </table>
+</div>
+
+<script language="javascript">
+$(document).ready(function() {
+    // Setup - add a text input to each footer cell
+    var x = 0;
+    $('#dataList thead tr:eq(1) td').each( function () {
+      var title = $(this).text();
+      if (!$(this).is(':last-child') && !$(this).is(':first-child') ) {
+        $(this).html( '<input type="text" style="color:#333" placeholder="Search '+title+'" />' );
+      }
+      else{
+        $(this).html("");
+      }
+
+  	} );
+
+  	// DataTable
+  	var table = $('#dataList').DataTable({
+        ajax: "{{ base_url }}pembelian/purchaseorder/listdata.html",  
+        columnDefs: [ {
+                "targets": 0,
+                "visible": false,
+                "searchable": false
+            },{
+            "targets": -1,
+            "data": null,
+            "defaultContent": "<detail class='fa fa-search' title='View detail atau rubah status'></detail> <modify class='fa fa-pencil tips' title='Tombol untuk merubah data!'></modify> <remove class='fa fa-trash tips' title='Tombol untuk menghapus data!'></remove>",
+            "width": "80px",
+        }],
+        "order": [[ 7, "desc" ]],
+        "bSortCellsTop": true,
+        "pageLenght" : 25,
+        "searching": true,
+        "aLengthMenu": [[25, 100, 200, -1], [25, 100, 200, "All"]]
+    });
+
+  	// Apply the search
+  	table.columns().every( function () {
+  		$('#dataList thead tr:eq(1) td input').on('keyup change', function () {
+        table.column($(this).parent().index() + ':visible').search(this.value).draw();
+      });
+    });
+
+    $('#dataList tbody').on('click', 'detail', function () {
+        var data = table.row($(this).parents('tr')).data();
+        openPopup("{{base_url}}pembelian/purchaseorder/viewdetail/"+data[7], "100%", "100%");
+    });
+
+    $('#dataList tbody').on('click', 'modify', function () {
+        var data = table.row($(this).parents('tr')).data();
+        if(data[6] == "draft") {
+            openPopup("{{base_url}}pembelian/purchaseorder/form/"+data[7], "100%", "100%");
+        }
+        else{
+            toastr["error"]("Purchase order tersebut telah melewati status submit, data tidak bisa di edit!", "Notification");
+        }
+        
+    });
+
+    $('#dataList tbody').on('click', 'remove', function () {
+        var data = table.row($(this).parents('tr')).data();
+        if(data[6] == "draft") {
+            confirmThis("{{base_url}}pembelian/purchaseorder/deletedata/"+data[7], "Anda yakin ingin menghapus transaksi tersebut?");
+        }
+        else{
+            toastr["error"]("Purchase order tersebut telah melewati status submit, data tidak bisa di hapus!", "Notification");
+        }
+
+    });
+
+    if($('.dataTables_empty').length){
+        $('.dataTables_empty').html("No data");
+    }
+
+    if ($('#formsubmit').length) {
+        $("#formsubmit").validate({
+          rules: {
+            name: {
+              required: true,
+              minlength: 3
+            },
+            telephone: {
+              required: true,
+              digits: true
+            },
+            address: {
+              required: true,
+              minlength: 3
+            }
+          }
+        });
+    }
+
+});
+</script>
+{% endblock %}

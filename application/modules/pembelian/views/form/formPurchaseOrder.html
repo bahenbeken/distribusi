@@ -1,0 +1,343 @@
+{% extends "headerblank.html" %}
+{% block content %}
+<div class="col-md-12">
+    <div class="col-md-12">
+        <div class="popup-title"><i class="fa fa-cube"></i>&nbsp;Purchase Order</div>
+    </div>
+</div>
+
+<div class="col-md-12">
+<form class="form-horizontal" action="" method="post" id="formsubmit">
+    <input type="hidden" name="id" id="id" value="{{ header.id }}">
+    <div class="col-lg-12">
+        <div class="col-lg-5">
+            <div class="form-group">
+                <label for="text1" class="control-label col-lg-3">PO Number</label>
+                
+                <input type="hidden" name="id_po" id="id_po" value="{{ header.id_po }}">
+                <div class="col-lg-4">
+                    <input type="text" class="form-control" id="po_number" {% if is_auto == 'yes' %} placeholder="AUTO NUMBER" readonly {% else %} required {% endif %} name="po_number" value="{{header.po_number}}">
+                </div>
+            </div>
+
+            {% if session.userdata.sanitasDistLevel == "asm" %}
+            <div class="form-group">
+                <label for="text1" class="control-label col-lg-3">Distributor</label>
+                <div class="col-lg-7">
+                    <input type="hidden" name="id_distributor" id="id_distributor" value="{{session.userdata.sanitasDistDistributorID}}">
+                    <table  border="0" cellpadding="0px" cellspacing="0px" style="margin: 0px">
+                        <tr>
+                            <td style="width:30%;"><input type="text" class="form-control" placeholder="Kode" id="code" name="code" value="{{session.userdata.sanitasDistDistributorCode}}" readonly></td>
+                            <td style="width:70%;"><input type="text" class="form-control" placeholder="Nama" id="distributor_name" name="distributor_name" value="{{session.userdata.sanitasDistDistributorName}}" readonly></td>
+                            <td><div style="margin:0px !important; opacity:0 !important; cursor:unset !important;" class="btn btn-default-blue"><i class="fa fa-search"></i></div></td>
+                        </td>
+                    </table>                    
+                </div>                
+            </div> 
+            {% else %}  
+            <div class="form-group">
+                <label for="text1" class="control-label col-lg-3">Distributor</label>
+                <div class="col-lg-7">
+                    <input type="hidden" name="id_distributor" id="id_distributor" value="{{header.id_distributor}}">
+                    <table  border="0" cellpadding="0px" cellspacing="0px" style="margin: 0px">
+                        <tr>
+                            <td style="width:30%;"><input type="text" class="form-control" placeholder="Kode" id="code" name="code" value="{{header.distributor_code}}" readonly></td>
+                            <td style="width:70%;"><input type="text" class="form-control" placeholder="Nama" id="distributor_name" name="distributor_name" value="{{header.distributor_name}}" readonly></td>
+                            <td><div style="margin:0px !important;" class="btn btn-default-blue"  onclick="openPopup('{{base_url}}masterdata/distributor/popupbrowse/', '80%', '80%');"><i class="fa fa-search"></i></div></td>
+                        </td>
+                    </table>                    
+                </div>                
+            </div> 
+            {% endif %} 
+            <div class="form-group">
+                <label for="text1" class="control-label col-lg-3">Alamat</label>
+                <div class="col-lg-6">
+                    <input type="text" class="form-control" id="address" name="address" value="{{session.userdata.sanitasDistDistributorAddress}}" >
+                </div>
+            </div>
+
+        </div>
+
+        <div class="col-lg-5">
+            <div class="form-group">
+                <label for="text1" class="control-label col-lg-3">Tanggal PO</label>
+                <div class="col-lg-5">
+                    <input type="date" class="form-control" id="tanggal_po" name="tanggal_po" value="{{header.tanggal_po}}" required>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label for="text1" class="control-label col-lg-3">Total PO</label>
+                <div class="col-lg-4">
+                    <input type="text" dir="rtl" readonly class="form-control" id="total_po" name="total_po" value="{{header.total_po}}">
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label for="text1" class="control-label col-lg-3">Note</label>
+                <div class="col-lg-7">
+                    <textarea class="form-control" id="note" name="note" rows="5" style="height: 60px !important;" >{{header.note}}</textarea>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-12">
+        <div class="popup-title"><i class="fa fa-cubes"></i>&nbsp;Detail Purchase Order</div>
+    </div>
+
+    <div class="col-lg-12">
+    <table class="table table-bordered" >
+        <thead>
+            <tr class="detail_head">
+                <th style="width:60px;">No.</th>
+                <th style="width:150px;">Item Number</th>
+                <th>Item Name</th>
+                <th style="width:100px;">UOM</th>
+                <th style="width:100px;">Qty</th>
+                <th>Price</th>
+                <th>Total Amount</th>
+                <th></th>
+            </tr>    
+        </thead>
+        <tbody class="detail_body bodyClone">
+            {% set last_id = 1 %}
+            {% if header.id !="" %}
+                {% set x = 0 %}
+                {% for det in detail %}
+                {% set x = loop.index %}
+                <tr id="rowCopy{{x}}">
+                    <td><span id="no_urut{{x}}">{{x}}.</span></td>
+                    <td>
+                        <table>
+                            <tr>
+                                <td>
+                                    <input type="text" class="form-control" id="item_number{{x}}" name="item_number{{x}}" value="{{det.item_number}}">
+                                    <input type="hidden" name="id_item{{x}}" id="id_item{{x}}" value="{{det.id_item}}"/>
+                                </td>
+                                <td><button class="btn btn-default-blue" type="button" id="open_item{{x}}" name="open_item{{x}}" onclick="openPopupItem({{x}})"><i class="fa fa-search"></i></button></td>
+                            </tr>
+                        </table>
+                    </td>
+                    <td><input type="text" class="form-control" id="item_name{{x}}" name="item_name{{x}}" value="{{det.item_name}}" readonly></td>
+                    <td><input type="text" class="form-control" id="uom{{x}}" name="uom{{x}}" value="{{det.uom}}" readonly></td>
+                    <td><input type="text" class="form-control" id="qty{{x}}" name="qty{{x}}" value="{{det.qty}}" onkeyup="hitungSubTotal({{x}})"></td>
+                    <td><input type="text" class="form-control" id="price{{x}}" name="price{{x}}" value="{{det.unit_price}}" onkeyup="hitungSubTotal({{x}})" {% if det.is_fixed_price =="1" %} readonly {% endif %}></td>
+                    <td><input type="text" class="form-control" id="sub_total{{x}}" name="sub_total{{x}}" value="{{det.sub_total}}" readonly></td>
+                    <td><button class="btn btn-default-blue  Add" type="button"><i class="fa fa-plus"></i></button>&nbsp;<button class="btn btn-default-blue Remove" type="button"><i class="fa fa-minus"></i></button></td>
+                </tr> 
+                {% endfor %}
+                {% set last_id = x %}
+            {% else %}
+            <tr id="rowCopy1">
+                <td><span id="no_urut1">1.</span></td>
+                <td>
+                    <table>
+                        <tr>
+                            <td>
+                                <input type="text" class="form-control" id="item_number1" name="item_number1" value="{{edit.item_number}}">
+                                <input type="hidden" name="id_item1" id="id_item1"/>
+                            </td>
+                            <td><button class="btn btn-default-blue" type="button" id="open_item1" name="open_item1" onclick="openPopupItem(1)"><i class="fa fa-search"></i></button></td>
+                        </tr>
+                    </table>
+                </td>
+                <td><input type="text" class="form-control" id="item_name1" name="item_name1" value="{{edit.item_name}}" readonly></td>
+                <td><input type="text" class="form-control" id="uom1" name="uom1" value="{{edit.uom}}" readonly></td>
+                <td><input type="text" class="form-control" id="qty1" name="qty1" value="{{edit.qty}}" onkeyup="hitungSubTotal(1)"></td>
+                <td><input type="text" class="form-control" id="price1" name="price1" value="{{edit.price}}" onkeyup="hitungSubTotal(1)"></td>
+                <td><input type="text" class="form-control" id="sub_total1" name="sub_total1" value="{{edit.sub_total}}" readonly></td>
+                <td><button class="btn btn-default-blue  Add" type="button"><i class="fa fa-plus"></i></button>&nbsp;<button class="btn btn-default-blue Remove" type="button"><i class="fa fa-minus"></i></button></td>
+            </tr> 
+            {% endif %}           
+        </tbody>
+    </table>
+    <input type="hidden" id="last_id" name="last_id" value="{{last_id}}"/>
+    </div>
+    <div class="col-lg-12">
+        <div class="form-group">
+            <div class="col-lg-5">
+                <input type="submit" class="btn btn-default-blue" value="Simpan">
+                <input type="button" class="btn btn-default-grey" value="Batal" onclick="javascript:window.parent.$.fancybox.close()">
+            </div>
+        </div>
+    </div>
+
+    </form>
+</div>
+
+<script language="javascript">
+
+$(function(){
+    $("#item_number1").tooltip();
+    $("#qty1").tooltip();
+    $("#sub_total1").tooltip();
+});
+
+$(document).ready(function() {
+    
+
+    if ($('#formsubmit').length) {
+        $("#formsubmit").validate({
+          rules: {
+            code: {
+              required: true,
+              minlength: 3,
+              maxlength: 10
+            },
+            asm_name: {
+              required: true,
+              minlength: 3,
+              maxlength: 10
+            },
+            distributor_name: {
+              required: true,
+              minlength: 3,
+              maxlength: 60
+            },
+            address: {
+              required: true,
+              minlength: 3,
+              maxlength: 120
+            }
+          }
+        });
+    }
+
+
+    {% if session.flashdata.type == 'success' %}
+        window.parent.$('#dataList').DataTable().ajax.reload();
+    {% endif %}
+    
+
+});
+
+
+function addRow(){
+    var count = parseFloat($("#last_id").val());
+    var next = count + 1
+    var clone = $("#rowCopy"+count).clone(true).attr('id', 'rowCopy'+next).appendTo(".bodyClone");
+    
+    clone.find("#no_urut"+count).attr("id","no_urut"+next);
+    $("#no_urut"+next).html(next+"."); 
+
+    clone.find("#open_item"+count).attr("id","open_item"+next).attr("name","open_item"+next).attr("onclick","openPopupItem('"+next+"')");
+    $("#open_item"+next).val(""); 
+
+    clone.find("#item_number"+count).attr("id","item_number"+next).attr("name","item_number"+next).attr("onkeydown","openItem('"+next+"')");
+    $("#item_number"+next).val(""); 
+
+    clone.find("#id_item"+count).attr("id","id_item"+next).attr("name","id_item"+next);
+    $("#id_item"+next).val("");
+
+    clone.find("#item_name"+count).attr("id","item_name"+next).attr("name","item_name"+next);
+    $("#item_name"+next).val("");        
+
+    clone.find("#uom"+count).attr("id","uom"+next).attr("name","uom"+next);
+    $("#uom"+next).val("");
+    
+    clone.find("#qty"+count).attr("id","qty"+next).attr("name","qty"+next).attr("onkeyup","hitungSubTotal('"+next+"')");
+    $("#qty"+next).val("");
+
+    clone.find("#sub_total"+count).attr("id","sub_total"+next).attr("name","sub_total"+next).attr("onkeyup","hitungSubTotal('"+next+"')");
+    $("#sub_total"+next).val("");
+
+    clone.find("#price"+count).attr("id","price"+next).attr("name","price"+next);
+    $("#price"+next).val("");
+    $("#price"+next).prop("readonly", false);
+
+    clone.find("#sub_total"+count).attr("id","sub_total"+next).attr("name","sub_total"+next);
+    $("#sub_total"+next).val("");
+    
+    $("#last_id").val(next);
+    count++;
+}
+
+$(".Add").click(function(){
+    var count = parseFloat($("#last_id").val());
+    if($("#id_item"+count).val() !=="" && $("#qty"+count).val() !=="" && $("#price"+count).val() !=="" && $("#sub_total"+count).val() !=="" )
+    { 
+        addRow();
+    }
+    else{
+        toastr["error"]("Anda hanya bisa menambahkan item jika telah melengkapi baris terakhir!", "Notification");
+    }
+    
+});
+
+$('.Remove').click(function(){
+    var num = parseFloat($(this).closest('tr').attr("id").replace("rowCopy",""));
+    var LastNum = parseFloat($("#last_id").val()); 
+    if(LastNum > 1) {
+        $(this).closest('tr').remove();
+        $("#last_id").val(LastNum - 1 );
+        
+        if(num < LastNum) {
+            var next = num;
+            var to = num-1;
+
+            for(var i = num; i < LastNum; i++){
+                next++;
+                to++;
+
+                $("#rowCopy"+next).attr("id","rowCopy"+to);
+                $("#rowCopy"+to).find("#no_urut"+next).attr("id","no_urut"+to).html(to+".");
+                $("#rowCopy"+to).find("#open_item"+next).attr("id","open_item"+to).attr("name","open_item"+to);
+                $("#rowCopy"+to).find("#item_number"+next).attr("id","item_number"+to).attr("name","item_number"+to);
+                $("#rowCopy"+to).find("#id_item"+next).attr("id","id_item"+to).attr("name","id_item"+to);          
+                $("#rowCopy"+to).find("#item_name"+next).attr("id","item_name"+to).attr("name","item_name"+to);          
+                $("#rowCopy"+to).find("#uom"+next).attr("id","uom"+to).attr("name","uom"+to);          
+                $("#rowCopy"+to).find("#price"+next).attr("id","price"+to).attr("name","price"+to);     
+                $("#rowCopy"+to).find("#sub_total"+next).attr("id","sub_total"+to).attr("name","sub_total"+to);   
+            
+            }
+        }
+    }
+    else{
+        toastr["warning"]("Minimal 1 line item harus ada dalam transaksi purchase order", "Notification");
+    }
+    hitungTotalPO();
+});
+
+function distributorAction(){
+    return false;
+}
+
+function openPopupItem(num){
+    id_distributor = $("#id_distributor").val();
+    if(id_distributor !='') {
+        openPopup("{{base_url}}masterdata/distributorhargapoin/popupitemdistributor/"+id_distributor+"/"+num, "80%", "80%");
+    }
+    else{
+        toastr["error"]("Anda belum memilih distributor!", "Notification");
+    }
+    
+}
+
+function hitungSubTotal(num) {
+    var qty = $("#qty"+num).val();
+    var price = $("#price"+num).val();
+    if(isNaN(qty) == false) {
+        var subTotal = qty * price;            
+        $("#sub_total"+num).val(subTotal);
+        //setTimeout(function(){hitungTotalPO();}, 1000);
+    }
+    else{
+        $("#sub_total"+num).val(0);
+    }
+    hitungTotalPO()
+}
+
+function hitungTotalPO(){
+    var total_po = 0
+    var num = parseFloat($("#last_id").val());
+    for(var w = 1; w <= num; w++) {
+        if($("#sub_total"+w).val() !="") {
+            total_po = parseFloat($("#sub_total"+w).val()) + total_po;
+        }
+    }
+
+    $("#total_po").val(total_po);
+}
+</script>
+{% endblock %}

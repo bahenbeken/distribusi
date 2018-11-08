@@ -1,0 +1,155 @@
+<!doctype html>
+<html>
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>DELTAGRO DISTRIBUTION </title>
+    <meta name="description" content="DELTAGRO - Sistem Distribusi">
+    <meta name="author" content="">
+    <meta name="msapplication-TileColor" content="#5bc0de" />
+    <link rel="shortcut icon" href="{{base_url}}assets/img/icon.png" />
+    <meta name="msapplication-TileImage" content="{{base_url}}assets/img/metis-tile.png" />
+
+    {% include 'header_plugins.html' %}
+    <style type="text/css">
+      .navbar-inverse {
+          background-color: #C8C8C8  !important;
+      }
+    </style>
+
+  </head>
+        <!-- <body class=" sidebar-left-mini menu-affix"> Menu Kecil di non aktifkan-->
+        <body class="menu-affix">
+            <div class="bg-dark dk" id="wrap">
+                <div id="top">
+                    <!-- .navbar -->
+                    <nav class="navbar navbar-inverse navbar-fixed-top">
+                        <div class="container-fluid">
+
+                            <!-- Brand and toggle get grouped for better mobile display -->
+                            <header class="navbar-header">
+                              <a href="index.html" class="navbar-brand">
+                                <img src="{{base_url}}assets/img/dss.png" class="logo" alt="">
+                              </a>
+                            </header>
+
+                            <div class="topnav">
+                                    <img src="{{base_url}}assets/img/sanitas_logo_new.png" class="logo-kecil" alt="">
+                                <div class="btn-group">
+                                    <a data-placement="bottom" data-original-title="Show / Hide Left" data-toggle="tooltip"
+                                       class="btn btn-default btn-sm toggle-left" id="menu-toggle">
+                                        <i class="fa fa-bars"></i>
+                                    </a>
+                                    <a data-placement="bottom" data-original-title="Fullscreen" data-toggle="tooltip"
+                                       class="btn btn-default btn-sm" id="toggleFullScreen">
+                                        <i class="glyphicon glyphicon-fullscreen"></i>
+                                    </a>
+
+                                    <a data-toggle="modal" data-original-title="Help" data-placement="bottom"
+                                       class="btn btn-default btn-sm"
+                                       href="#helpModal">
+                                        <i class="fa fa-question"></i>
+                                    </a>
+
+                                    <a href="javascript:void(0)" onclick="confirmThis('{{base_url}}main/logout.html', 'anda yakin?')" data-toggle="tooltip" data-original-title="Logout" data-placement="bottom"
+                                       class="btn btn-default btn-sm">
+                                        <i class="fa fa-power-off"></i>
+                                    </a>
+
+                                    
+                                </div>
+                                
+                            </div>
+
+
+                        </div>
+                        <!-- /.container-fluid -->
+                    </nav>
+
+                </div>
+                <!-- /#top -->
+                <div id="left">
+                    {% if session.userdata.sanitasDistUserId != '' %}
+                        {% include 'menu_admin.html' %}
+                    {% endif %}
+                </div>
+                <!-- /#left -->
+                <div id="content">
+                    <div class="outer">
+                        <div class="inner bg-light lter">
+                            <input type="hidden" name="is_submit" id="is_submit" value="yes">
+                            <input type="hidden" name="is_approve" id="is_approve" value="yes">
+                            <input type="hidden" name="is_confirm" id="is_confirm" value="yes">
+                          {% block content %}{% endblock %}
+                        </div>
+                        
+                        {{css_handle|raw}}
+                        <!-- /.inner -->
+                    </div>
+                    <!-- /.outer -->
+
+
+                </div>
+                <!-- /#content -->
+                <!-- /#right -->
+            </div>
+            <!-- /#wrap -->
+            <footer class="Footer bg-dark dker">
+                <p>Copyright &copy; 2018, Techno One Consulting</p>
+            </footer>
+            <!-- /#footer -->
+
+            <!--jQuery -->
+            <script>
+
+
+              function printDiv(divName){
+                w=window.open();
+                //w.document.write("<link rel='stylesheet' href='/assets/lib/bootstrap/css/bootstrap.css' media='print'>");
+                w.document.write("<html><head><title></title>");
+                w.document.write("<link rel='stylesheet' href='{{base_url}}assets/lib/bootstrap/css/bootstrap.css' type='text/css' />");
+                w.document.write("<link rel='stylesheet' href='{{base_url}}assets/css/main.css' type='text/css' />");
+                w.document.write("<link rel='stylesheet' href='{{base_url}}assets/lib/bootstrap/css/less/tables.less' />");
+                w.document.write("</head><body >");
+                w.document.write($("#"+divName).html());
+                w.document.write("</body></html>");
+                //w.print();
+                //w.close();
+              }
+
+              function tableToExcel(table, name, filename) {
+                    let uri = 'data:application/vnd.ms-excel;base64,',
+                    template = '<html xmlns:o="urn:schemas-microsoft-com:office:office" xmlns:x="urn:schemas-microsoft-com:office:excel" xmlns="http://www.w3.org/TR/REC-html40"><title></title><head><!--[if gte mso 9]><xml><x:ExcelWorkbook><x:ExcelWorksheets><x:ExcelWorksheet><x:Name>{worksheet}</x:Name><x:WorksheetOptions><x:DisplayGridlines/></x:WorksheetOptions></x:ExcelWorksheet></x:ExcelWorksheets></x:ExcelWorkbook></xml><![endif]--><meta http-equiv="content-type" content="text/plain; charset=UTF-8"/></head><body><table>{table}</table></body></html>',
+                    base64 = function(s) { return window.btoa(decodeURIComponent(encodeURIComponent(s))) },
+                    format = function(s, c) { return s.replace(/{(\w+)}/g, function(m, p) { return c[p]; })}
+
+                    if (!table.nodeType) table = document.getElementById(table)
+                    var ctx = {worksheet: name || 'Worksheet', table: table.innerHTML}
+
+                    var link = document.createElement('a');
+                    link.download = filename;
+                    link.href = uri + base64(format(template, ctx));
+                    link.click();
+            }
+
+              /*
+              function printDiv(divName) {
+                 var printContents = document.getElementById(divName).innerHTML;
+                 var originalContents = document.body.innerHTML;
+
+                 document.body.innerHTML = printContents;
+
+                 window.print();
+
+                 document.body.innerHTML = originalContents;
+              }
+              */
+
+            </script>
+            {% include 'footer_plugins.html' %}
+             <iframe width="150" height="189" name="gToday:normal:agenda.js" id="gToday:normal:agenda.js" src="{{ base_url }}assets/lib/datepicker/ipopeng.htm" scrolling="no" frameborder="0" style="z-index:1000; position:absolute; top:-500px; left:-500px;"></iframe>
+        </body>
+
+</html>

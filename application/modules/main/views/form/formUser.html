@@ -1,0 +1,180 @@
+{% extends "header.html" %}
+{% block content %}
+<div class="col-md-12">
+  <div class="box primary">
+      <header class="text-success">
+          <div class="icons"><i class="fa fa-cube"></i></div>
+          <h5>USER</h5>
+      </header>
+  </div>
+</div>
+<div class="col-md-12">
+  <form class="form-horizontal" action="" method="post" id="formsubmit"  style="margin-bottom:50px;">
+      <input type="hidden" name="id" id="id" value="{{ edit.id }}">
+      <div class="col-lg-5">
+
+        <div class="form-group">
+            <label for="text1" class="control-label col-lg-4">Username</label>
+            <div class="col-lg-7">
+              <input type="text" class="form-control" id="username" name="username" value="{{edit.username}}" {% if edit.id !='' %} readonly {% endif %} required>
+            </div>
+        </div>
+
+        <div class="form-group">
+            <label for="text1" class="control-label col-lg-4">Type</label>
+            <div class="col-lg-7">
+              <select class="form-control" name="type" id="type" onchange="selectType(this)">
+                <option value="supervisor" {% if edit.type == 'supervisor' %} selected {% endif %}>Supervisor</option>
+                <option value="sales" {% if edit.type == 'sales' %} selected {% endif %}>Sales</option>
+                <option value="retailer" {% if edit.type == 'retailer' %} selected {% endif %}>Retailer</option>
+              </select>
+            </div>
+        </div>
+
+        <div class="form-group" id="retailerInput">
+            <label for="text1" class="control-label col-lg-4">Retailer Name</label>
+            <div class="col-lg-5" style="padding-right:0; margin-right:0;">
+              <input type="hidden" id="id_retailer" name="id_retailer" />
+              <input type="text" style="border-radius:5px 0px 0px 5px" class="form-control browseData" id="retailer_name" name="retailer_name" data-url="{{base_url}}main/popup/retailer.html" data-width="70%" data-height="70%" readonly>
+            </div>
+            <div class="col-lg-1" style="padding-left:0; margin-left:0">
+              <a href="#" class="btn btn-metis-5 btn-rect browseData" title="" data-url="{{base_url}}main/popup/retailer.html" data-width="70%" data-height="70%"><i class="fa fa-search"></i></a>
+            </div>
+        </div>
+
+        <div class="form-group">
+            <label for="text1" class="control-label col-lg-4">Email</label>
+            <div class="col-lg-7">
+              <input type="text" class="form-control" id="email" name="email" value="{{edit.email}}" required>
+            </div>
+        </div>
+
+        <div class="form-group">
+            <label for="text1" class="control-label col-lg-4">Password</label>
+            <div class="col-lg-5">
+              <input type="password" class="form-control" id="password" name="password" value="{{edit.password}}" required>
+            </div>
+        </div>
+
+      </div>
+
+      <div class="col-lg-12">
+          <div class="form-group">
+              <div class="col-lg-5">
+                  <input type="submit" class="btn btn-default" value="Simpan">
+                  <input type="button" class="btn btn-lighter" value="Batal" onclick="window.location='{{base_url}}main/utility/user.html'">
+              </div>
+          </div>
+      </div>
+
+      </form>
+
+</div>
+
+<div class="col-md-12">
+
+  <div class="judul_sub">
+    <hr/>
+  </div>
+
+  <table id="dataList" class="display" cellspacing="0" width="100%">
+
+        <thead>
+
+          <tr>
+              <th>No.</th>
+              <th>Username</th>
+              <th>Type</th>
+              <th>Retailer Name</th>
+              <th>Email</th>
+              <th>Proses</th>
+          </tr>
+      </thead>
+      <tbody>
+          {% for dt in data %}
+          <tr>
+            <td>{{loop.index}}.</td>
+            <td>{{dt.username}}</td>
+            <td>{{dt.type}}</td>
+            <td>{{dt.retailer_name}}</td>
+            <td>{{dt.email}}</td>
+            <td>
+                <a href="{{base_url}}main/utility/user/{{dt.id}}.html"><modify class='fa fa-pencil'></modify></a>
+                <a href="javascript:void(0);" onclick="andaYakin('{{base_url}}main/utility/deleteuser/{{dt.id}}.html');"><remove class='fa fa-trash'></remove></a>
+            </td>
+          </tr>
+          {% endfor %}
+      </tbody>
+  </table>
+</div>
+
+<script language="javascript">
+
+function selectType(obj) {
+  var value = $(obj, 'option:selected').val();
+  if(value == 'retailer') {
+    $("#retailerInput").show();
+    if($("#id").val() != '') {
+      $("#id_retailer").val("{{edit.retail_id}}");
+      $("#retailer_name").val("{{edit.retailer_name}}");
+    }
+    else{
+      $("#id_retailer").val('');
+      $("#retailer_name").val('');
+    }
+  }
+  else{
+    $("#retailerInput").hide();
+    $("#id_retailer").val(0);
+    $("#retailer_name").val("UNSELECTED");
+  }
+}
+
+$(document).ready(function() {
+    var selObj = $("#type");
+    selectType(selObj);
+
+    // Setup - add a text input to each footer cell
+    var table = $('#dataList').DataTable({
+      "bSortCellsTop": true,
+      "pageLenght" : 25,
+      "searching": true,
+      "aLengthMenu": [[25, 100, 200, -1], [25, 100, 200, "All"]],
+    });
+
+    if ($('#formsubmit').length) {
+        $("#formsubmit").validate({
+          rules: {
+            username: {
+              required: true,
+              minlength: 3
+            },
+            email: {
+              required: true,
+              email: true
+            },
+            retailer_name: {
+              required: true,
+              minlength: 3
+            },
+            password: {
+              required: true,
+              minlength: 3
+            }
+          }
+        });
+    }
+});
+
+if ($('.datePicker').length) {
+  $('.datePicker').datepicker({
+      dateFormat: 'yy-mm-dd',
+      yearRange: "1955:2005",
+      changeYear: true,
+      changeMonth: true,
+      prevText: '',
+      nextText: ''
+  });
+}
+</script>
+{% endblock %}

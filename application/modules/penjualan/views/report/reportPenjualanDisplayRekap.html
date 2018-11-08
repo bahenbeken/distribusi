@@ -1,0 +1,78 @@
+{% extends "headerblank.html" %}
+{% block content %}
+
+<div class="col-lg-12 text-right" id="report_panel">
+    <button class="btn btn-default-blue"  onclick="javascript:$('#report_panel').hide();print(document);$('#report_panel').show()"><i class="fa fa-print"></i>&nbsp;Cetak</button>
+    <button class="btn btn-default-blue" onclick="javascript:tableToExcel('detailReport', 'detailReport', 'Report.xls')" ><i class="fa fa-file-excel-o"></i>&nbsp;Excel</button>
+</div>
+
+<div class="col-md-12">
+    <div class="col-md-12">
+        <div class="popup-title"><i class="fa fa-shopping-cart"></i>&nbsp;Laporan Penjualan Customer</div>
+    </div>
+</div>
+
+<div class="col-md-12">
+    <div class="col-lg-12">
+        <table class="headerTrans">
+            <tr>
+                <td>From Date</td>
+                <td>&nbsp;:&nbsp;</td>
+                <td><strong>{{from_date|date("d/m/Y")}}</strong></td>
+            </tr>
+            <tr>
+                <td>To Date</td>
+                <td>&nbsp;:&nbsp;</td>
+                <td><strong>{{to_date|date("d/m/Y")}}</strong></td>
+            </tr>
+            <tr>
+                <td>Detail</td>
+                <td>&nbsp;:</td>
+                <td>
+                    {% if is_detail != "0" %}
+                    <strong>Yes</strong>
+                    {% else %}
+                    <strong>No</strong>
+                    {% endif %}
+                </td>
+            </tr>
+        </table>
+    </div>
+    <div class="col-lg-12">
+        <br/>
+    </div>
+    <div class="col-lg-12">
+    <table class="table table-bordered detailReport" id="detailReport">
+        <thead>
+            <tr class="detail_head">
+                <th>Disti Code</th>
+                <th>Cust ID</th>
+                <th>Cust Name</th>
+                <th>ASM</th>
+                <th>Salesman</th>      
+                <th>Invoice Amount</th> 
+            </tr>    
+        </thead>
+        <tbody>            
+            {% set total = 0 %}
+            {% for dt in data %}
+                <tr>
+                    <td>{{dt.distributor_code}}</td>
+                    <td>{{dt.code}}</td>
+                    <td>{{dt.customer_name}}</td>
+                    <td>{{dt.asm_name}}</td>
+                    <td>{{dt.sales_name}}</td>
+                    <td align="right">{{dt.total_amount|number_format(0,'.','.')}}</td>
+                </tr>
+                {% set total = total + dt.total_amount %}
+            {% endfor %}
+            <tr>
+                <td colspan="5" align="right" style="font-weight: bold">TOTAL PENJUALAN</td>
+                <td align="right" style="font-weight: bold">{{total|number_format(0,'.','.')}}</td>
+            </tr>
+        </tbody>
+    </table>
+    </div>  
+      
+</div>
+{% endblock %}

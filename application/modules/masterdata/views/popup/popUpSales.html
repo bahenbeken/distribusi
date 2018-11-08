@@ -1,0 +1,85 @@
+{% extends "headerblank.html" %}
+{% block content %}
+<div class="col-md-12">
+    <div class="popup-title"><i class="fa fa-database"></i>&nbsp;Pilih Sales Person</div>
+</div>
+
+<div class="col-md-12">
+    <table id="dataList" class="display" cellspacing="0" width="100%">
+        <thead>
+            <tr>
+                <th>No.</th>
+                <th>Kode Sales</th>
+                <th>Distributor</th>
+                <th>Sales Name</th>
+                <th>Process</th>
+            </tr>
+            <tr>
+                <td>No.</td>
+                <td>Kode Sales</td>
+                <td>Distributor</td>
+                <td>Sales Name</td>
+                <td>Process</td>
+            </tr>
+        </thead>        
+    </table>
+</div>
+
+<script language="javascript">
+
+$(document).ready(function() {
+    $('#dataList tbody tr').tooltip();
+    // Setup - add a text input to each footer cell
+    var x = 0;
+    $('#dataList thead tr:eq(1) td').each( function () {
+        var title = $(this).text();
+        if (!$(this).is(':last-child') && !$(this).is(':first-child') ) {
+            $(this).html( '<input type="text" style="color:#333" placeholder="Search '+title+'" />' );
+        }
+        else{
+            $(this).html("");
+        }
+    });
+
+    var table = $('#dataList').DataTable({
+        ajax: "{{ base_url }}masterdata/salesperson/listdata/{{id_distributor}}",  
+        columnDefs: [{
+            "targets": -1,
+            "data": null,
+            "visible": false,
+            "searchable": false
+        }],
+        "order": [[ 4, "desc" ]],
+        "bSortCellsTop": true,
+        "pageLenght" : 25,
+        "searching": true,
+        "aLengthMenu": [[25, 100, 200, -1], [25, 100, 200, "All"]],
+        "fnDrawCallback": function( oSettings ) {
+            $('#dataList tbody tr').each( function() {
+                this.setAttribute('title', "Klik pada baris untuk memilih!");
+                this.setAttribute('style', "cursor:pointer");
+            }).tooltip();
+        },
+    });
+    
+    // Apply the search
+  	table.columns().every( function () {
+  		$('#dataList thead tr:eq(1) td input').on('keyup change', function () {
+            table.column($(this).parent().index() + ':visible').search(this.value).draw();
+        });
+    });    
+    $('#dataList tbody').on('click', 'tr', function () {
+        var dt = table.row(this).data();
+        window.parent.$("#id_sales").val(dt[4]);
+        window.parent.$("#sales_code").val(dt[1]);        
+        window.parent.$("#sales_name").val(dt[3]);
+        window.parent.$.fancybox.close();
+    });
+
+    if($('.dataTables_empty').length){
+        $('.dataTables_empty').html("No data");
+    }
+});
+
+</script>
+{% endblock %}

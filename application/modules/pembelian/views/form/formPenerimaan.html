@@ -1,0 +1,184 @@
+{% extends "headerblank.html" %}
+{% block content %}
+<div class="col-md-12">
+    <div class="col-md-12">
+        <div class="popup-title"><i class="fa fa-cube"></i>&nbsp;Penerimaan Barang</div>
+    </div>
+</div>
+
+<div class="col-md-12">
+<form class="form-horizontal" action="" method="post" id="formsubmit">
+    <input type="hidden" name="id" id="id" value="{{ header.id }}">
+    <div class="col-lg-12">
+        <div class="col-lg-5">
+            <div class="form-group">
+                <label for="text1" class="control-label col-lg-3">PB Number</label>
+                <div class="col-lg-4">                    
+                    <input type="text" class="form-control" id="pb_number" {% if is_auto == 'yes' %} placeholder="AUTO NUMBER" readonly {% else %} required {% endif %} name="pb_number" value="{{header.pb_number}}">
+                </div>
+            </div>
+            <div class="form-group">
+                <label for="text1" class="control-label col-lg-3">PO Number</label>
+                <div class="col-lg-5">
+                    <input type="hidden" name="id_po" id="id_po" value="{{header.id_po}}">
+                    <table>
+                        <tr>
+                            <td><input type="text" title="Pilih nomor PO, klik browse"  class="form-control" id="po_number" name="po_number"  onclick="openPopup('{{base_url}}pembelian/penerimaan/popuppo/', '80%', '80%');" value="{{header.po_number}}" required></td>
+                            <td><div class="btn btn-default-blue" onclick="openPopup('{{base_url}}pembelian/penerimaan/popuppo/', '80%', '80%');"><i class="fa fa-search"></i></div></td>
+                        </td>
+                    </table>                    
+                </div>
+            </div>
+        </div>
+        <div class="col-lg-5">
+            <div class="form-group">
+                <label for="text1" class="control-label col-lg-3">Distributor</label>
+                <div class="col-lg-7">
+                    <input type="hidden" name="id_distributor" id="id_distributor" value="{{header.id_distributor}}">
+                    <table>
+                        <tr>
+                            <td style="width:30%"><input type="text" class="form-control"  title="Pilih Nomor PO untuk melengkapi ini" placeholder="Code" id="disti_code" name="disti_code" value="{{header.disti_code}}" required readonly></td>
+                            <td style="width:70%"><input type="text" class="form-control" placeholder="Name" id="distributor_name" name="distributor_name" value="{{header.distributor_name}}" readonly required></td>
+                        </td>
+                    </table>                    
+                </div>                
+            </div>
+            <div class="form-group">
+                <label for="text1" class="control-label col-lg-3">Tgl. Penerimaan</label>
+                <div class="col-lg-5">
+                        <input type="date" class="form-control" id="tanggal_pb" name="tanggal_pb" value="{{header.tanggal_pb}}" required>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-12">
+        <div class="popup-title"><i class="fa fa-cubes"></i>&nbsp;Detail Penerimaan</div>
+    </div>
+    <div class="col-md-12">
+        <input type="button" class="btn btn-default-blue" {% if header.id_po =="" %}  disabled {% endif %} value="Full Terima" onclick="fullTerima();">
+    </div>
+                
+    <div class="col-lg-12">
+    <table class="table table-bordered" >
+        <thead>
+            <tr class="detail_head">
+                <th style="width:60px;">No.</th>
+                <th style="width:150px;">Item Number</th>
+                <th>Item Name</th>
+                <th style="width:100px;">UOM</th>
+                <th style="width:100px;">Qty Order</th>
+                <th style="width:100px;">Qty Terima</th>
+                <th style="width:100px;">Qty Sisa</th>
+            </tr>    
+        </thead>
+        <tbody class="detail_body bodyClone">
+            {% set last_id = 1 %}
+            {% if header.id_po !="" %}
+                {% set x = 0 %}
+                {% for det in detail %}
+                {% set x = loop.index %}
+                <tr id="rowCopy{{x}}">
+                    <td><span id="no_urut{{x}}">{{x}}.</span></td>
+                    <td>
+                        <input  type="text" class="form-control" id="item_number{{x}}" name="item_number{{x}}" value="{{det.item_number}}" readonly>
+                        <input type="hidden" name="id_item{{x}}" id="id_item{{x}}" value="{{det.id_item}}"/>
+                        <input type="hidden" name="qty_pb_udah{{x}}" id="qty_pb_udah{{x}}" value="{{det.qty_pb_udah}}"/>
+                    </td>
+                    <td><input type="text" class="form-control" id="item_name{{x}}" name="item_name{{x}}" value="{{det.item_name}}" readonly></td>
+                    <td><input type="text" class="form-control" id="uom{{x}}" name="uom{{x}}" value="{{det.uom}}" readonly></td>
+                    <td><input type="text" class="form-control" id="qty_po{{x}}" name="qty_po{{x}}" value="{{det.qty_po}}" readonly></td>
+                    <td><input type="text" class="form-control" id="qty_pb{{x}}" name="qty_pb{{x}}" value="{{det.qty_pb}}" onkeyup="hitungQty('{{x}}')"></td>
+                    <td><input type="text" class="form-control" id="qty_sisa{{x}}" name="qty_sisa{{x}}" value="{{det.qty_sisa}}" readonly></td>
+                </tr> 
+                {% endfor %}
+                {% set last_id = x %}
+            {% endif %}           
+        </tbody>
+    </table>
+    <input type="hidden" id="last_id" name="last_id" value="{{last_id}}"/>
+    </div>
+    <div class="col-lg-12">
+        <div class="form-group">
+            <div class="col-lg-5">
+                <input type="submit" class="btn btn-default-blue" value="Simpan">
+                <input type="button" class="btn btn-default-grey" value="Batal" onclick="javascript:window.parent.$.fancybox.close()">
+            </div>
+        </div>
+    </div>
+
+    </form>
+</div>
+
+<script language="javascript">
+
+$(document).ready(function() {
+    
+
+    if ($('#formsubmit').length) {
+        $("#formsubmit").validate({
+          rules: {
+            code: {
+              required: true,
+              minlength: 3,
+              maxlength: 10
+            },
+            asm_name: {
+              required: true,
+              minlength: 3,
+              maxlength: 10
+            },
+            distributor_name: {
+              required: true,
+              minlength: 3,
+              maxlength: 60
+            },
+            address: {
+              required: true,
+              minlength: 3,
+              maxlength: 120
+            }
+          }
+        });
+    }
+
+
+    {% if session.flashdata.type == 'success' %}
+        window.parent.$('#dataList').DataTable().ajax.reload();
+    {% endif %}
+    
+
+});
+
+
+function hitungQty(num) {    
+    var qty_pb_udah = $("#qty_pb_udah"+num).val();    
+    var qty_pb = $("#qty_pb"+num).val();    
+    var qty_po = $("#qty_po"+num).val();
+    if(isNaN(qty_pb) == false) {
+        var keterima = parseFloat(qty_pb) + parseFloat(qty_pb_udah);
+        var qty_sisa = qty_po - keterima
+        if(qty_sisa >= 0) {
+            $("#qty_sisa"+num).val(qty_sisa);
+        }
+        else{
+            $("#qty_pb"+num).val(qty_po);
+            toastr["error"]("Quantity Terima tidak bisa lebih dari quantity order!", "Notification");
+        }
+    }
+    else{
+        $("#qty_receive"+num).val(0);
+    }
+}
+
+function fullTerima() {
+    var jumlah = $("#last_id").val();
+    for(var x = 1; x <= jumlah; x++) {
+        $("#qty_pb"+x).val($("#qty_sisa"+x).val());
+        $("#qty_sisa"+x).val(0); 
+    }
+    toastr["success"]("Jumlah terima sudah di set sesuai order, anda bisa simpan transaksi ini!", "Notification");
+}
+
+</script>
+{% endblock %}

@@ -1,0 +1,89 @@
+
+<script src="{{base_url}}assets/lib/bootstrap/js/bootstrap.js"></script>
+<script src="{{base_url}}assets/lib/metismenu/metisMenu.js"></script>
+<script src="{{base_url}}assets/lib/onoffcanvas/onoffcanvas.js"></script>
+<script src="{{base_url}}assets/lib/screenfull/screenfull.js"></script>
+<script src="{{base_url}}assets/js/core.js"></script>
+<script src="{{base_url}}assets/js/app.js"></script>
+
+<script src="{{base_url}}assets/lib/bootstrap-tagsinput-latest/dist/angular.js"></script>
+<script src="{{base_url}}assets/lib/bootstrap-tagsinput-latest/dist/typeahead.bundle.min.js"></script>
+<script src="{{base_url}}assets/lib/bootstrap-tagsinput-latest/dist/bootstrap-tagsinput.min.js"></script>
+<script src="{{base_url}}assets/lib/bootstrap-tagsinput-latest/dist/bootstrap-tagsinput-angular.min.js"></script>
+
+
+<link rel="stylesheet" href="{{base_url}}assets/lib/blockpage/blockpage.css">
+<script src="{{base_url}}assets/lib/blockpage/blockpage.js"></script>
+
+<script type="text/javascript">
+    $(".openPopup").on("click", function (e) {
+        e.preventDefault();
+        var frame_src = $(this).attr("href");
+        var frame_width = $(this).attr("data-width");
+        var frame_height = $(this).attr("data-height");
+
+        $.fancybox.open({
+             href : frame_src,
+             type : 'iframe',
+             helpers : {
+                 media: true
+             },
+             width: frame_width,
+             height: frame_height,
+             autoSize: false,
+             scrolling: false,
+             padding: "0px"
+        });
+        $("#left").css("top","0px");
+
+    });
+
+    $(".browseData").on("click", function (e) {
+        e.preventDefault();
+        var frame_src = $(this).attr("data-url");
+        var frame_width = $(this).attr("data-width");
+        var frame_height = $(this).attr("data-height");
+
+        $.fancybox.open({
+             href : frame_src,
+             type : 'iframe',
+             helpers : {
+                 media: true
+             },
+             width: frame_width,
+             height: frame_height,
+             autoSize: false,
+             scrolling: false,
+             padding: "0px"
+        });
+    });
+
+    function openPopup(url, width, height){
+        $("#left").css("top","0px");
+        var frame_src = url;
+        var frame_width = width;
+        var frame_height = height;
+        
+        $.fancybox.open({
+            href : frame_src,
+            type : 'iframe',
+            helpers : {
+                media: true
+            },
+            width: frame_width,
+            height: frame_height,
+            autoSize: false,
+            scrolling: false,
+            padding: "0px"
+        });        
+    }
+
+
+
+    {% if session.flashdata.type !='' %}
+        toastr["{{session.flashdata.type}}"]("{{session.flashdata.notify}}", "Notification");
+    {% endif %}
+
+</script>
+
+

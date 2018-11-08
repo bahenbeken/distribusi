@@ -1,0 +1,81 @@
+{% extends "header.html" %}
+{% block content %}
+<div class="col-md-12">
+  <div class="box primary">
+      <header class="text-success">
+          <div class="icons"><i class="fa fa-list"></i></div>
+          <h5>USER AKSES</h5>
+      </header>
+  </div>
+</div>
+
+<div class="col-md-12">
+    <table id="dataList" class="display" cellspacing="0" width="100%">
+        <thead>
+            <tr>
+                <th>Username</th>
+                <th>Type</th>
+                <th>Distributor</th>
+                <th>Set Akses</th>
+            </tr>
+            <tr>
+                <td>Username</td>
+                <td>Type</td>
+                <td>Distributor</td>
+                <td>Process</td>
+            </tr>
+        </thead>        
+    </table>
+</div>
+
+<script language="javascript">
+$(document).ready(function() {
+    // Setup - add a text input to each footer cell
+    var x = 0;
+    $('#dataList thead tr:eq(1) td').each( function () {
+      var title = $(this).text();
+      if (!$(this).is(':last-child')) {
+        $(this).html( '<input type="text" style="color:#333" placeholder="Search '+title+'" />' );
+      }
+      else{
+        $(this).html("");
+      }
+
+  	} );
+
+  	// DataTable
+  	var table = $('#dataList').DataTable({
+        ajax: "{{ base_url }}masterdata/utility/listdatauser.html",  
+        columnDefs: [
+            {
+                "targets": -1,
+                "data": null,
+                "defaultContent": "<modify class='fa fa-check-square-o'></modify>",
+                "width": "80px",
+            }],
+        "order": [[ 3, "desc" ]],
+        "bSortCellsTop": true,
+        "pageLenght" : 25,
+        "searching": true,
+        "aLengthMenu": [[25, 100, 200, -1], [25, 100, 200, "All"]],
+    });
+
+  	// Apply the search
+  	table.columns().every( function () {
+  		$('#dataList thead tr:eq(1) td input').on('keyup change', function () {
+        table.column($(this).parent().index() + ':visible').search(this.value).draw();
+      });
+    });
+
+    $('#dataList tbody').on('click', 'modify', function () {
+        var data = table.row($(this).parents('tr')).data();
+        openPopup("{{base_url}}masterdata/menucontrol/formpriviledge/"+data[3], "100%", "100%");
+    });
+    
+    if($('.dataTables_empty').length){
+        $('.dataTables_empty').html("No data");
+    }
+});
+
+</script>
+{% endblock %}

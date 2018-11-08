@@ -1,0 +1,93 @@
+<!-- #menu -->
+<ul id="menu" class="bg-blue dker">
+    <li class="">
+        <a href="{{base_url}}main/index.html">
+        <i class="fa fa-dashboard"></i><span class="link-title">&nbsp;Dashboard</span>
+        </a>
+    </li>
+
+    <li class="">
+        <a href="javascript:;">
+            <i class="fa fa-cart-plus"></i>
+            <span class="link-title">Penjualan</span>
+            <span class="fa arrow"></span>
+        </a>
+        <ul class="collapse">
+            <li><a href="{{base_url}}penjualan/customer/index.html"><i class="fa fa-caret-right"></i>&nbsp;Customer Master</a></li>
+            <li><a href="{{base_url}}penjualan/invoice/index.html"><i class="fa fa-caret-right"></i>&nbsp;Invoice</a></li>
+            <li><a href="{{base_url}}penjualan/invoicepayment/index.html"><i class="fa fa-caret-right"></i>&nbsp;Pelunasan Invoice</a></li>
+            <li><a href="{{base_url}}penjualan/araging/index.html"><i class="fa fa-caret-right"></i>&nbsp;AR Aging</a></li>
+            <li><a href="{{base_url}}penjualan/reportpenjualan/index.html"><i class="fa fa-caret-right"></i>&nbsp;Laporan Penjualan per Customer</a></li>
+        </ul>
+    </li>
+
+    <li class="">
+        <a href="javascript:;">
+            &nbsp;<i class="fa fa-dollar"></i>
+            <span class="link-title">Pembelian</span>
+            <span class="fa arrow"></span>
+        </a>
+        <ul class="collapse">
+            <li><a href="{{base_url}}pembelian/purchaseorder/index.html"><i class="fa fa-caret-right"></i>&nbsp;Purchase Order</a></li>
+            <li><a href="{{base_url}}pembelian/penerimaan/index.html"><i class="fa fa-caret-right"></i>&nbsp;Penerimaan Barang</a></li>
+        </ul>
+    </li>
+
+    <li class="">
+        <a href="javascript:;">
+            <i class="fa fa-cubes"></i>
+            <span class="link-title">Inventory</span>
+            <span class="fa arrow"></span>
+        </a>
+        <ul class="collapse">
+            <li><a href="{{base_url}}inventory/item/index.html"><i class="fa fa-caret-right"></i>&nbsp;Item Master</a></li>
+            <li><a href="{{base_url}}inventory/uom/index.html"><i class="fa fa-caret-right"></i>&nbsp;UOM</a></li>
+            <li><a href="{{base_url}}inventory/item/stockonhand.html"><i class="fa fa-caret-right"></i>&nbsp;Stock On Hand</a></li>            
+            <li><a href="{{base_url}}inventory/reportpenjualan/index.html"><i class="fa fa-caret-right"></i>&nbsp;Laporan Penjualan per Item</a></li>            
+            <li><a href="{{base_url}}inventory/reportpenjualan/marginreport.html"><i class="fa fa-caret-right"></i>&nbsp;Laporan Margin</a></li>
+        </ul>
+    </li>
+
+    <li class="">
+        <a href="javascript:;">
+            <i class="fa fa-database"></i>
+            <span class="link-title">Master Data</span>
+            <span class="fa arrow"></span>
+        </a>
+        <ul class="collapse">
+            <li><a href="{{base_url}}masterdata/distributor/index.html"><i class="fa fa-caret-right"></i>&nbsp;Distributor Code</a></li>
+            <li><a href="{{base_url}}masterdata/salesperson/index.html"><i class="fa fa-caret-right"></i>&nbsp;Sales Person</a></li>
+            <li><a href="{{base_url}}masterdata/retailerhargapoin/index.html"><i class="fa fa-caret-right"></i>&nbsp;Retailer - Harga &amp; Point</a></li>
+            <li><a href="{{base_url}}masterdata/distributorhargapoin/index.html"><i class="fa fa-caret-right"></i>&nbsp;Distributor - Harga &amp; Point</a></li>
+            <li><a href="{{base_url}}masterdata/utility/user.html"><i class="fa fa-caret-right"></i>&nbsp;User Name</a></li>
+            <li><a href="{{base_url}}masterdata/utility/userakses.html"><i class="fa fa-caret-right"></i>&nbsp;User Akses</a></li>         
+            <li><a href="{{base_url}}masterdata/utility/serialcode.html"><i class="fa fa-caret-right"></i>&nbsp;No Series</a></li>
+            <li><a href="{{base_url}}masterdata/utility/emailsetup.html"><i class="fa fa-caret-right"></i>&nbsp;Email Setup</a></li>
+        </ul>
+    </li>
+
+    <li class="">
+        <a href="javascript:;">
+            <i class="fa fa-money"></i>
+            <span class="link-title">Bonus</span>
+            <span class="fa arrow"></span>
+        </a>
+        <ul class="collapse">
+            <li><a href="{{base_url}}penjualan/reportpenjualan/bonusdistributor.html"><i class="fa fa-caret-right"></i>&nbsp;Bonus Distributor</a></li>
+            <li><a href="{{base_url}}penjualan/reportpenjualan/bonusretailer.html"><i class="fa fa-caret-right"></i>&nbsp;Bonus Retailer</a></li>
+        </ul>
+    </li>
+
+    <li class="">
+        <a href="{{base_url}}main/logout.html">
+            <i class="fa fa-arrow-circle-left"></i><span class="link-title">&nbsp;Logout</span>
+        </a>
+    </li>
+</ul>
+<style>
+    #menu ul li .collapse li{
+        padding-left: 7px;
+    }
+    
+</style>
+<!-- /#menu -->

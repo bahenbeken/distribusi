@@ -1,0 +1,86 @@
+{% extends "headerblank.html" %}
+{% block content %}
+
+<div class="col-lg-12 text-right" id="report_panel">
+    <button class="btn btn-default-blue"  onclick="javascript:$('#report_panel').hide();print(document);$('#report_panel').show()"><i class="fa fa-print"></i>&nbsp;Cetak</button>
+    <button class="btn btn-default-blue" onclick="javascript:tableToExcel('detailReport', 'detailReport', 'Report.xls')" ><i class="fa fa-file-excel-o"></i>&nbsp;Excel</button>
+</div>
+
+<div class="col-md-12">
+    <div class="col-md-12">
+        <div class="popup-title"><i class="fa fa-shopping-cart"></i>&nbsp;Laporan Penjualan Per Item</div>
+    </div>
+</div>
+
+<div class="col-md-12">
+    <input type="hidden" name="id" id="id" value="{{ edit.id }}">
+    <div class="col-lg-12">
+        <table class="headerTrans">
+            <tr>
+                <td>From Date</td>
+                <td>&nbsp;:&nbsp;</td>
+                <td><strong>{{from_date|date("d/m/Y")}}</strong></td>
+            </tr>
+            <tr>
+                <td>To Date</td>
+                <td>&nbsp;:&nbsp;</td>
+                <td><strong>{{to_date|date("d/m/Y")}}</strong></td>
+            </tr>
+            <tr>
+                <td>Detail</td>
+                <td>&nbsp;:</td>
+                <td>
+                    {% if is_detail != "0" %}
+                    <strong>Yes</strong>
+                    {% else %}
+                    <strong>No</strong>
+                    {% endif %}
+                </td>
+            </tr>
+        </table>
+    </div>
+    <div class="col-lg-12">
+        <br/>
+    </div>
+    <div class="col-lg-12">
+    <table class="table table-bordered detailReport" id="detailReport">
+        <thead>
+            <tr class="detail_head">
+                <th>Item Number</th>
+                <th>Item Name</th>
+                <th>UOM</th>
+                <th>Distributor Code</th>
+                <th>Distributor Name</th>         
+                <th>Last Selling Date</th>        
+                <th>Saldo Awal</th>        
+                <th>Pembelian</th>    
+                <th>Penjualan</th>    
+                <th>Saldo Akhir</th>   
+            </tr>    
+        </thead>
+        <tbody>
+            
+
+            {% for dt in data %}      
+                {% set saldo_akhir = (dt.saldo_awal + dt.qty_beli) -  dt.qty_jual%}
+
+                <tr>
+                    <td>{{dt.item_number}}</td>
+                    <td>{{dt.item_name}}</td>
+                    <td>{{dt.uom}}</td>
+                    <td>{{dt.distributor_code}}</td>
+                    <td>{{dt.distributor_name}}</td>
+                    <td>{{dt.last_selling_date|date('d/m/Y')}}</td>
+                    <td>{{dt.saldo_awal}}</td>    
+                    <td>{{dt.qty_beli}}</td>   
+                    <td>{{dt.qty_jual}}</td>  
+                    <td>{{saldo_akhir}}</td>    
+                </tr>
+                
+            {% endfor %}
+        </tbody>
+    </table>
+    </div>  
+      
+</div>
+{% endblock %}

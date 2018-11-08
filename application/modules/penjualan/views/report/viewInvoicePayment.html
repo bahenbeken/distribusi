@@ -1,0 +1,107 @@
+{% extends "headerblank.html" %}
+{% block content %}
+<div class="col-lg-12">
+    <div class="form-group">
+        <div class="col-lg-12" align="right">
+            <input type="button" class="btn btn-default-blue submitTrans" value="Submit" onclick="updateStatus('approve')" {% if header.status == "draft" %} {% else %} disabled {% endif %}>
+        </div>
+    </div>
+</div>
+
+<div class="col-md-12">
+    <div class="col-md-12">
+        <div class="popup-title"><i class="fa fa-file-archive-o"></i>&nbsp;Data Invoice Payment</div>
+    </div>
+</div>
+
+<div class="col-md-12">
+    <input type="hidden" name="id" id="id" value="{{ edit.id }}">
+    <div class="col-lg-12">
+        <table width="100%" class="headerTrans">
+            <tr>
+                <td>Invoice Number</td>
+                <td>:</td>
+                <td><strong>{{header.um_number}}</strong></td>
+                <td>Total Pembayaran</td>
+                <td>:</td>
+                <td>{{header.total_um|number_format(2,".",",")}}</td>
+            
+            </tr>
+            <tr>
+                <td>Customer</td>
+                <td>:</td>
+                <td>{{header.customer_code}} - {{header.customer_name}}</td>
+                <td>Tanggal Pembayaran</td>
+                <td>:</td>
+                <td>{{header.payment_date|date("d/m/Y")}}</td>
+            </tr>
+            <tr>
+                <td>Distributor</td>
+                <td>:</td>
+                <td>{{header.disti_code}} - {{header.distributor_name}}</td>
+                <td>Sales Person</td>
+                <td>:</td>
+                <td>{{header.sales_code}} - {{header.sales_name}}</td>
+            </tr>
+        </table>
+    </div>
+
+    <div class="col-md-12">
+        <div class="popup-title"><i class="fa fa-file-archive-o"></i>&nbsp;Detail Invoice Payment</div>
+    </div>
+
+    <div class="col-lg-12">
+    <table class="table table-bordered detailTrans">
+        <thead>
+            <tr class="detail_head">
+                <th style="width:20px;">No.</th>
+                <th>Invoice Number</th>
+                <th>Total Bayar</th>
+                <th>Total Sisa</th>
+            </tr>    
+        </thead>
+        <tbody>
+            {% set x = 0 %}
+            {% for det in detail %}
+                {% set x = x+1 %}
+                <tr>
+                    <td><span>{{x}}.</span></td>
+                    <td>{{det.invoice_number}}</td>
+                    <td align="right">{{det.payment|number_format(2,".",",")}}</td>
+                    <td align="right">{{det.remain|number_format(2,".",",")}}</td>
+                </tr>
+            {% endfor %}
+            <tr>
+                <td>&nbsp;</td>
+                <td align="right"><strong>TOTAL</strong></td>
+                <td align="right"><strong>{{header.total_um|number_format(2,".",",")}}</strong></td>
+                <td>&nbsp;</td>
+            </tr>
+        </tbody>
+    </table>
+    <input type="hidden" id="last_id" name="last_id" value="1"/>
+    </div>  
+      
+</div>
+<style>
+    .headerTrans td{
+        padding: 4px;
+        font-size: 13px;
+        font-weight: bold;
+        text-transform: uppercase;
+    }
+    .detailTrans td{
+        font-size: 14px;
+    }
+</style>
+<script>
+    function updateStatus(statusName) {
+        confirmThis("{{base_url}}penjualan/invoicepayment/updatestatus/{{header.id}}/"+statusName, "Anda yakin? ini akan merubah status Pelunasan Invoice");
+    }
+
+    {% if session.flashdata.type == 'success' %}
+        window.parent.$('#dataList').DataTable().ajax.reload();
+    {% endif %}
+</script>
+
+{% endblock %}

@@ -1,0 +1,98 @@
+{% extends "headerblank.html" %}
+{% block content %}
+<div class="col-lg-12">
+    <div class="form-group">
+        <div class="col-lg-12" align="right">
+            <input type="button" class="btn btn-default-blue submitTrans" value="Submit" onclick="updateStatus('receive')" {% if header.status == "draft" %} {% else %} disabled {% endif %}>
+        </div>
+    </div>
+</div>
+
+<div class="col-md-12">
+    <div class="col-md-12">
+        <div class="popup-title"><i class="fa fa-cube"></i>&nbsp;Data Penerimaan</div>
+    </div>
+</div>
+
+<div class="col-md-12">
+    <input type="hidden" name="id" id="id" value="{{ header.id }}">
+    <div class="col-lg-12">
+        <table width="100%" class="headerTrans">
+            <tr>
+                <td>PB Number</td>
+                <td>:</td>
+                <td><strong>{{header.pb_number}}</strong></td>
+                <td>PO Number</td>
+                <td>:</td>
+                <td>{{header.po_number}}</td>
+            </tr>
+            <tr>
+                <td>Tanggal PB</td>
+                <td>:</td>
+                <td>{{header.tanggal_pb|date("d/m/Y")}}</td>
+                <td>Distributor</td>
+                <td>:</td>
+                <td>{{header.disti_code}} - {{header.distributor_name}}</td>
+            </tr>
+        </table>
+    </div>
+
+    <div class="col-md-12">
+        <div class="popup-title"><i class="fa fa-cubes"></i>&nbsp;Detail Penerimaan Barang</div>
+    </div>
+
+    <div class="col-lg-12">
+    <table class="table table-bordered detailTrans">
+        <thead>
+            <tr class="detail_head">
+                <th style="width:60px;">No.</th>
+                <th style="width:150px;">Item Number</th>
+                <th>Item Name</th>
+                <th>UOM</th>
+                <th>Qty PO</th>
+                <th>Qty Receive</th>
+                <th>Qty Sisa</th>
+            </tr>    
+        </thead>
+        <tbody>
+            {% set x = 0 %}
+            {% for det in detail %}
+                {% set x = x+1 %}
+                <tr>
+                    <td><span>{{x}}.</span></td>
+                    <td>{{det.item_number}}</td>
+                    <td>{{det.item_name}}</td>
+                    <td>{{det.uom}}</td>
+                    <td>{{det.qty_po}}</td>
+                    <td>{{det.qty_pb}}</td>
+                    <td>{{det.qty_sisa}}</td>
+                </tr>
+            {% endfor %}
+            
+        </tbody>
+    </table>
+    </div>  
+      
+</div>
+<style>
+    .headerTrans td{
+        padding: 4px;
+        font-size: 13px;
+        font-weight: bold;
+        text-transform: uppercase;
+    }
+    .detailTrans td{
+        font-size: 14px;
+    }
+</style>
+<script>
+    function updateStatus(statusName) {
+        confirmThis("{{base_url}}pembelian/penerimaan/updatestatuspb/{{header.id}}/"+statusName, "Anda yakin? ini akan merubah status Penerimaan Barang");
+    }
+
+    {% if session.flashdata.type == 'success' %}
+        window.parent.$('#dataList').DataTable().ajax.reload();
+    {% endif %}
+</script>
+
+{% endblock %}

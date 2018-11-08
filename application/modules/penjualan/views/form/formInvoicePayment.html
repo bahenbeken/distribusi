@@ -1,0 +1,219 @@
+{% extends "headerblank.html" %}
+{% block content %}
+<div class="col-md-12">
+    <div class="col-md-12">
+        <div class="popup-title"><i class="fa fa-file-archive-o"></i>&nbsp;Pembayaran Invoice</div>
+    </div>
+</div>
+
+<div class="col-md-12">
+<form class="form-horizontal" action="" method="post" id="formsubmit">
+    <input type="hidden" name="id" id="id" value="{{ header.id }}">
+    <input type="hidden" name="id_um" id="id_um" value="{{ header.id_um }}">
+    <div class="col-lg-12">
+        <div class="col-lg-5">
+            <div class="form-group">
+                <label for="text1" class="control-label col-lg-3">Nomor UM</label>               
+                <div class="col-lg-4">
+                    <input type="text" class="form-control" id="um_number"  {% if is_auto == 'yes' %} placeholder="AUTO NUMBER" readonly {% else %} required {% endif %} name="um_number" value="{{header.um_number}}">
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label for="text1" class="control-label col-lg-3">Customer</label>
+                <div class="col-lg-7">
+                    <input type="hidden" name="id_customer" id="id_customer" value="{{header.id_customer}}">
+                    <table>
+                        <tr>
+                            <td style="width:30%;"><input type="text" class="form-control" placeholder="Kode" id="customer_code" name="customer_code" value="{{header.customer_code}}" required readonly></td>
+                            <td style="width:70%;"><input type="text" class="form-control" placeholder="Nama" id="customer_name" name="customer_name" value="{{header.customer_name}}" readonly></td>
+                            <td><div style="margin:0px !important;" class="btn btn-default-blue" onclick="openPopup('{{base_url}}penjualan/customer/popupcustomer/', '80%', '80%');"><i class="fa fa-search"></i></div></td>
+                        </tr>
+                    </table>                    
+                </div>                
+            </div>
+
+            <div class="form-group">
+                <label for="text1" class="control-label col-lg-3">Distributor</label>
+                <div class="col-lg-7">
+                    <input type="hidden" name="id_distributor" id="id_distributor" value="{{header.id_distributor}}">
+                    <table  border="0" cellpadding="0px" cellspacing="0px" style="margin: 0px">
+                        <tr>
+                            <td style="width:30%;"><input type="text" class="form-control" placeholder="Kode" id="distributor_code" name="distributor_code" value="{{header.distributor_code}}" required readonly></td>
+                            <td style="width:70%;"><input type="text" class="form-control" placeholder="Nama" id="distributor_name" name="distributor_name" value="{{header.distributor_name}}" readonly></td>
+                            <td><div style="margin:0px !important; opacity: 0; cursor: unset;" class="btn btn-default-blue"><i class="fa fa-search"></i></div></td>
+                        </td>
+                    </table>                    
+                </div>                
+            </div>
+
+            <div class="form-group">
+                <label for="text1" class="control-label col-lg-3">Sales Person</label>
+                <div class="col-lg-7">
+                    <input type="hidden" name="id_sales" id="id_sales" value="{{header.id_sales}}">
+                    <table>
+                        <tr>
+                            <td style="width:30%;"><input type="text" class="form-control" placeholder="Kode" id="sales_code" name="sales_code" value="{{header.sales_code}}" required readonly></td>
+                            <td style="width:70%;"><input type="text" class="form-control" placeholder="Nama" id="sales_name" name="sales_name" value="{{header.sales_name}}" readonly></td>
+                            <td><div style="margin:0px !important; opacity: 0; cursor: unset;" class="btn btn-default-blue"><i class="fa fa-search"></i></div></td>
+                        </tr>
+                    </table>                    
+                </div>                
+            </div>   
+            
+        </div>
+
+        <div class="col-lg-5">
+
+            <div class="form-group">
+                <input type="hidden" name="customer_address" id="customer_address" value="{{header.address}}"/>
+                <label for="text1" class="control-label col-lg-3">Tanggal Payment</label>
+                <div class="col-lg-5">
+                    <input type="date" class="form-control" id="payment_date" name="payment_date" value="{{header.payment_date}}" required>
+                </div>
+            </div>
+            <div class="form-group">
+                <label for="text1" class="control-label col-lg-3">Total</label>
+                <div class="col-lg-5">
+                    <input type="text" class="form-control" id="total_um" name="total_um" value="{{header.total_um}}" readonly >
+                </div>
+            </div>  
+           
+        </div>
+    </div>
+    
+    <div class="col-md-12">
+        <div class="popup-title"><i class="fa fa-file-archive-o"></i>&nbsp;Detail Invoice Payment</div>
+    </div>
+    <div class="col-md-12">
+        <input type="button" class="btn btn-default-blue" onclick="setFull()" value="Pembayaran Full" {% if header.id !="" %} {% else %} disabled {% endif %}>
+    </div>
+    <div class="col-lg-12">
+    <table class="table table-bordered" >
+        <thead>
+            <tr class="detail_head">
+                <th style="width:60px;">No.</th>
+                <th style="width:150px;">Nomor Invoice</th>
+                <th>Total Tagihan</th>
+                <th>Pembayaran</th>
+                <th>Sisa</th>
+            </tr>    
+        </thead>
+        <tbody class="detail_body bodyClone">
+            {% set last_id = 1 %}
+            {% if header.id !="" %}
+                {% set x = 0 %}
+                {% for det in detail %}
+                {% set x = loop.index %}
+                <tr id="rowCopy{{x}}">
+                    <td><span id="no_urut{{x}}">{{x}}.</span></td>
+                    <td>
+                        <input type="hidden" name="id_invoice{{x}}" id="id_invoice{{x}}" value="{{det.id_invoice}}"/>
+                        <input type="text" class="form-control" id="invoice_number{{x}}" name="invoice_number{{x}}" value="{{det.invoice_number}}" readonly>
+                    </td>
+                    <td><input type="text" class="form-control" id="amount{{x}}" name="amount{{x}}" value="{{det.amount}}" readonly></td>
+                    <td>
+                        <input type="hidden" id="remain_real{{x}}" name="remain_real{{x}}" value="{{det.remain}}">
+                        <input type="hidden" id="payment_real{{x}}" name="payment_real{{x}}" value="{{det.payment}}">
+                        <input type="text" class="form-control" id="payment{{x}}" name="payment{{x}}" value="{{det.payment}}" onkeyup="hitungSisa({{x}})"></td>
+                    <td><input type="text" class="form-control" id="remain{{x}}" name="remain{{x}}" value="{{det.remain}}" readonly></td>
+                </tr> 
+                {% endfor %}
+                {% set last_id = x %}
+            {% endif %}
+        </tbody>
+    </table>
+    <input type="hidden" id="last_id" name="last_id" value="{{last_id}}"/>
+    </div>
+    <div class="col-lg-12">
+        <div class="form-group">
+            <div class="col-lg-5">
+                <input type="submit" class="btn btn-default-blue" value="Simpan">
+                <input type="button" class="btn btn-default-grey" value="Batal" onclick="javascript:window.parent.$.fancybox.close()">
+            </div>
+        </div>
+    </div>
+
+    </form>
+</div>
+
+<script language="javascript">
+
+$(document).ready(function() {    
+
+    if ($('#formsubmit').length) {
+        $("#formsubmit").validate();
+    }
+
+    {% if session.flashdata.type == 'success' %}
+        window.parent.$('#dataList').DataTable().ajax.reload();
+    {% endif %}    
+
+});
+
+function distributorAction(){
+    return false;
+}
+function customerAction(){
+    var idCustomer = $("#id_customer").val();
+    window.location = "{{base_url}}penjualan/invoicepayment/form/INV/"+idCustomer;
+}
+
+function openPopupItem(num){
+    id_distributor = $("#id_distributor").val();
+    if(id_distributor !='') {
+        openPopup("{{base_url}}masterdata/retailerhargapoin/popupitemretailer/"+id_distributor+"/"+num, "80%", "80%");
+    }
+    else{
+        toastr["error"]("Anda belum memilih customer!", "Notification");
+    }    
+}
+
+function setFull() {
+    var total_um = 0
+    for(var w = 1; w <= $("#last_id").val(); w++) {
+        $("#payment"+w).val($("#remain"+w).val());
+        $("#remain"+w).val(0);
+    }
+    hitungTotal();
+    toastr["success"]("Pembayaran telah di sesuaikan dengan nilai sisa!", "Notification");
+}
+
+function hitungSisa(num) {
+    var amount = $("#amount"+num).val();
+    var payment = $("#payment"+num).val();
+    var remain = $("#remain"+num).val();
+    if($("#id_um").val() > 0 ) {
+        var remain_real = parseFloat($("#remain_real"+num).val()) + parseFloat($("#payment_real"+num).val());
+    }
+    else{
+        var remain_real = $("#remain_real"+num).val();
+    }
+    if(isNaN(payment) == false) {
+        var sisa = remain_real - payment;            
+        if(sisa < 0) {
+            toastr["error"]("Pembayaran tidak boleh melebihi sisa!", "Notification");
+            $("#remain"+num).val(amount);
+            $("#payment"+num).val(0);
+        }
+        else{
+            $("#remain"+num).val(sisa);
+        }
+    }
+    else{
+        $("#remain"+num).val(amount);
+        $("#payment"+num).val(0);
+    }
+    hitungTotal();
+}
+
+function hitungTotal(){
+    var total_um = 0
+    for(var w = 1; w <= $("#last_id").val(); w++) {
+        total_um = parseFloat($("#payment"+w).val()) + total_um;
+    }
+
+    $("#total_um").val(total_um);
+}
+</script>
+{% endblock %}

@@ -1,0 +1,126 @@
+{% extends "headerblank.html" %}
+{% block content %}
+<div class="col-lg-12">
+    <div class="form-group">
+        <div class="col-lg-12" align="right">
+            <input type="button" class="btn btn-default-blue submitTrans" value="Submit" onclick="updateStatus('submit')" {% if header.status == "draft" %} {% else %} disabled {% endif %}>
+            <input type="button" class="btn btn-default-blue approveTrans" value="Approve" onclick="updateStatus('approved')" {% if header.status == "submit" %} {% else %} disabled {% endif %}>
+            <input type="button" class="btn btn-default-blue confirmTrans" value="Confirm" onclick="updateStatus('confirm')" {% if header.status == "approved" %} {% else %} disabled {% endif %}>
+        </div>
+    </div>
+</div>
+<div class="trans_content">
+
+    <div class="col-md-12">
+        <div class="col-md-12">
+            <div class="popup-title"><i class="fa fa-cube"></i>&nbsp;Data Purchase Order</div>
+        </div>
+    </div>
+    
+    <div class="col-md-12">
+        <input type="hidden" name="id" id="id" value="{{ edit.id }}">
+        <div class="col-lg-12">
+            <table width="100%" class="headerTrans">
+                <tr>
+                    <td>PO Number</td>
+                    <td>:</td>
+                    <td><strong>{{header.po_number}}</strong></td>
+                    <td>Tanggal PO</td>
+                    <td>:</td>
+                    <td>{{header.tanggal_po|date("d/m/Y")}}</td>
+                </tr>
+                <tr>
+                    <td>Distributor</td>
+                    <td>:</td>
+                    <td>{{header.disti_code}} - {{header.distributor_name}}</td>
+                    <td>Total PO</td>
+                    <td>:</td>
+                    <td>{{header.total_po|number_format(2,".",",")}}</td>
+                </tr>
+                <tr>
+                    <td>Alamat</td>
+                    <td>:</td>
+                    <td>{{header.address}}</td>
+                    <td>Note</td>
+                    <td>:</td>
+                    <td>{{header.note}}</td>
+                </tr>
+            </table>
+        </div>
+    
+        <div class="col-md-12">
+            <div class="popup-title"><i class="fa fa-cubes"></i>&nbsp;Detail Purchase Order</div>
+        </div>
+    
+        <div class="col-lg-12">
+        <table class="table table-bordered detailTrans">
+            <thead>
+                <tr class="detail_head">
+                    <th style="width:60px;">No.</th>
+                    <th style="width:150px;">Item Number</th>
+                    <th>Item Name</th>
+                    <th style="width:100px;">UOM</th>
+                    <th style="width:100px;">Qty</th>
+                    <th>Price</th>
+                    <th>Total Amount</th>
+                </tr>    
+            </thead>
+            <tbody>
+                {% set x = 0 %}
+                {% for det in detail %}
+                    {% set x = x+1 %}
+                    <tr>
+                        <td><span>{{x}}.</span></td>
+                        <td>{{det.item_number}}</td>
+                        <td>{{det.item_name}}</td>
+                        <td>{{det.uom}}</td>
+                        <td>{{det.qty}}</td>
+                        <td align="right">{{det.unit_price|number_format(2,".",",")}}</td>
+                        <td align="right">{{det.sub_total|number_format(2,".",",")}}</td>
+                    </tr>
+                {% endfor %}
+                <tr>
+                    <td colspan="5">&nbsp;</td>
+                    <td align="right"><strong>TOTAL</strong></td>
+                    <td align="right"><strong>{{header.total_po|number_format(2,".",",")}}</strong></td>
+                </tr>
+            </tbody>
+        </table>
+        <input type="hidden" id="last_id" name="last_id" value="1"/>
+        </div>  
+          
+    </div>
+</div>
+
+<style>
+    .headerTrans td{
+        padding: 4px;
+        font-size: 13px;
+        font-weight: bold;
+        text-transform: uppercase;
+    }
+    .detailTrans td{
+        font-size: 14px;
+    }
+</style>
+<script>
+    function updateStatus(statusName) {
+
+        var str = "Anda yakin? ini akan merubah status Purchase Order";
+        if(statusName == "approved") {
+            str = "Anda yakin? ini akan merubah status Purchase Order dan mengirimkan email";
+        }
+        confirmThis("{{base_url}}pembelian/purchaseorder/updatestatuspo/{{header.id}}/"+statusName, str);
+    }
+
+    function saveContent(){
+        var x = $(".trans_content").html();
+        console.log(x);
+    }
+    //saveContent();
+    {% if session.flashdata.type == 'success' %}
+        window.parent.$('#dataList').DataTable().ajax.reload();
+    {% endif %}
+</script>
+
+{% endblock %}
