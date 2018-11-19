@@ -264,16 +264,17 @@ $('.Remove').click(function(){
             for(var i = num; i < LastNum; i++){
                 next++;
                 to++;
-
+                
                 $("#rowCopy"+next).attr("id","rowCopy"+to);
                 $("#rowCopy"+to).find("#no_urut"+next).attr("id","no_urut"+to).html(to+".");
-                $("#rowCopy"+to).find("#open_item"+next).attr("id","open_item"+to).attr("name","open_item"+to);
+                $("#rowCopy"+to).find("#open_item"+next).attr("id","open_item"+to).attr("name","open_item"+to).attr("onclick","openPopupItem('"+to+"')");
                 $("#rowCopy"+to).find("#item_number"+next).attr("id","item_number"+to).attr("name","item_number"+to);
+                $("#rowCopy"+to).find("#qty"+next).attr("id","qty"+to).attr("name","qty"+to).attr("onkeyup","hitungSubTotal('"+to+"')");
                 $("#rowCopy"+to).find("#id_item"+next).attr("id","id_item"+to).attr("name","id_item"+to);          
                 $("#rowCopy"+to).find("#item_name"+next).attr("id","item_name"+to).attr("name","item_name"+to);          
                 $("#rowCopy"+to).find("#uom"+next).attr("id","uom"+to).attr("name","uom"+to);          
                 $("#rowCopy"+to).find("#price"+next).attr("id","price"+to).attr("name","price"+to);     
-                $("#rowCopy"+to).find("#sub_total"+next).attr("id","sub_total"+to).attr("name","sub_total"+to);   
+                $("#rowCopy"+to).find("#sub_total"+next).attr("id","sub_total"+to).attr("name","sub_total"+to); 
             
             }
         }

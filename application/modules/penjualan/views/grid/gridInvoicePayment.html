@@ -16,7 +16,10 @@
                
             <tr>
                 <th>No.</th>
-                <th>Inv. Number</th>
+                <th>UM Number</th>
+                <th>Invoice Number</th>
+                <th>Invoice Date</th>
+                <th>Due Date</th>
                 <th>Pelanggan</th>
                 <th>Distributor</th>
                 <th>Sales</th>
@@ -26,10 +29,14 @@
                 <th>Sisa</th>             
                 <th>Status</th>
                 <th>Proses</th>
+                <th>detail</th>
             </tr>
             <tr>
                 <td>No.</td>
-                <td>Inv. Number</td>
+                <td>UM Number</td>
+                <td>Invoice Number</td>
+                <td>Invoice Date</td>
+                <td>Due Date</td>
                 <td>Customer</td>
                 <td>Distributor</td>
                 <td>Sales</td>
@@ -39,6 +46,7 @@
                 <td>Sisa</td>             
                 <td>Status</td>
                 <td>Proses</td>
+                <td>detail</td>
             </tr>
         </thead>        
     </table>
@@ -67,11 +75,15 @@ $(document).ready(function() {
             "visible": false,
             "searchable": false
         },{
-            "targets": -1,
+            "targets": 13,
             "data": null,
             "defaultContent": "<detail class='fa fa-search' title='View detail atau rubah status'></detail> <modify class='fa fa-pencil tips' title='Tombol untuk merubah data!'></modify> <remove class='fa fa-trash tips' title='Tombol untuk menghapus data!'></remove>",
             "width": "80px",
-        }],
+        },{
+            "targets": -1,
+            "visible": false,
+            "searchable": false
+        },],
         "order": [[ 9, "desc" ]],
         "bSortCellsTop": true,
         "pageLenght" : 25,
@@ -88,21 +100,28 @@ $(document).ready(function() {
 
     $('#dataList tbody').on('click', 'detail', function () {
         var data = table.row($(this).parents('tr')).data();
-        openPopup("{{base_url}}penjualan/invoicepayment/viewdetail/"+data[10], "100%", "100%");
+        openPopup("{{base_url}}penjualan/invoicepayment/viewdetail/"+data[13], "100%", "100%");
     });
 
     $('#dataList tbody').on('click', 'modify', function () {
         var data = table.row($(this).parents('tr')).data();
-        openPopup("{{base_url}}penjualan/invoicepayment/form/UM/"+data[10], "100%", "100%");        
+        if(data[12] == "draft") {
+            openPopup("{{base_url}}penjualan/invoicepayment/form/UM/"+data[13], "100%", "100%");     
+        }
+        else{
+            toastr["error"]("Invoice payment tersebut telah melewati status approve, data tidak bisa di edit!", "Notification");
+        }
+
+          
     });
 
     $('#dataList tbody').on('click', 'remove', function () {
         var data = table.row($(this).parents('tr')).data();
-        if(data[9] == "draft") {
-            confirmThis("{{base_url}}penjualan/invoicepayment/deletedata/"+data[10], "Anda yakin ingin menghapus transaksi tersebut?");
+        if(data[12] == "draft") {
+            confirmThis("{{base_url}}penjualan/invoicepayment/deletedata/"+data[13]+'/'+data[14], "Anda yakin ingin menghapus transaksi tersebut?");
         }
         else{
-            toastr["error"]("Purchase order tersebut telah melewati status submit, data tidak bisa di hapus!", "Notification");
+            toastr["error"]("Invoice payment tersebut telah melewati status approve, data tidak bisa di hapus!", "Notification");
         }
 
     });

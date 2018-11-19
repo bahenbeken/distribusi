@@ -100,6 +100,8 @@ class Purchaseorder extends MX_Controller {
         $stringEmail = "";
         $stringEmail.= "
         <div style='padding:20px; margin:20px; font-size:14px; font-family:arial'>
+        <p><img src='".base_url()."assets/img/dss.png' style='width:200px'></p>
+        <hr>
         <table width='100%' style='font-size:14px; font-family:arial'>
             <tbody>
                 <tr>
@@ -111,7 +113,7 @@ class Purchaseorder extends MX_Controller {
                 <tr>
                     <td>Tanggal PO</td>
                     <td>:</td>
-                    <td><strong>".date_format(date_create($header->tanggal_po),"m/d/Y")."</strong></td>
+                    <td><strong>".$this->helper->localDate($header->tanggal_po)."</strong></td>
                 </tr>
             </tbody>
         </table>
@@ -147,15 +149,17 @@ class Purchaseorder extends MX_Controller {
                     <th style='background-color:#ccc; padding:5px; border-left:1px solid #333; border-bottom:1px solid #333;'>Description</th>
                     <th style='background-color:#ccc; padding:5px; border-left:1px solid #333; border-bottom:1px solid #333;'>Qty</th>
                     <th style='background-color:#ccc; padding:5px; border-left:1px solid #333; border-bottom:1px solid #333;'>Unit Price</th>
-                    <th style='background-color:#ccc; padding:5px; border-left:1px solid #333; border-bottom:1px solid #333;'>Total Price</th>
+                    <th style='background-color:#ccc; padding:5px; border-left:1px solid #333; border-bottom:1px solid #333;'>Total Price (Rp.)</th>
                 </tr>    
             </thead>
             <tbody>
         ";
 
         $x = 0;
+        $total = 0;
         foreach ($detail as $data) {
             $x++;
+            $total = $total + $data->sub_total;
             $stringEmail.="<tr>
                         <td style='padding:5px; border-left:1px solid #333; border-bottom:1px solid #333;'><span>".$x.".</span></td>
                         <td style='padding:5px; border-left:1px solid #333; border-bottom:1px solid #333;'>".$data->item_name."</td>
@@ -164,7 +168,8 @@ class Purchaseorder extends MX_Controller {
                         <td align='right' style='padding:5px; border-left:1px solid #333; border-bottom:1px solid #333;'>".number_format($data->sub_total, 2, ".", ",")."</td>
                     </tr>"; 
         }
-        $stringEmail.="</tbody></table>";
+        $stringEmail.="</tbody></table>";        
+        $stringEmail.="<p align='right' style='font-weight:bold'>TOTAL (Rp.): ".number_format($total, 2, ".", ",")."</p>";
         $stringEmail.="<p><strong>NOTE :</strong><br/>".$header->note."</p>";
         $stringEmail.="</div>";
 
@@ -192,6 +197,7 @@ class Purchaseorder extends MX_Controller {
         $emailTo = $appSetup->email_setup;        
         //$emailTo = "blurify@gmail.com";        
         $from = "technoone263@gmail.com";
+        
 		$this->email->set_newline("\r\n");
         $this->email->from($from, 'No Reply - DELTAGRO');
         $this->email->to($emailTo);
@@ -199,8 +205,15 @@ class Purchaseorder extends MX_Controller {
         $this->email->message($bodyEmail);
 
 	    //Send mail
-	    if($this->email->send()) $output = true;
+        if($this->email->send()) {
+            $output = true;
+        }
+        else{
+            $this->email->print_debugger();
+        }        
 
+        //echo "ss";
+        //exit();
 		return $output;
     }
     
@@ -218,6 +231,9 @@ class Purchaseorder extends MX_Controller {
                 $subject = $dt->po_number." # ".$dt->distributor_name; 
 
                 $stringEmail = $this->generateEmailPurchase($idPO) ;                
+                
+               
+                
                 $sendEmail = $this->sendEmailInfo($stringEmail, $subject);
             }
             $this->session->set_flashdata(array("type" => "success", "notify" => "Purchase Order telah berganti status menjadi ".$statusName));

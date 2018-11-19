@@ -30,22 +30,40 @@ class Penerimaan extends MX_Controller {
         if($_POST) {
             $args = (object) $this->input->post();         
             $pbNumber = $this->modelPenerimaan->saveData($args);
-                
+            
+            if($pbNumber === false) {
+                $this->session->set_flashdata(array("type" => "warning", "notify" => "Data gagal tersimpan"));
+            }
+            else{
+                $this->session->set_flashdata(array("type" => "success", "notify" => "Data berhasil tersimpan dengan nomor Penerimaan ".$pbNumber));
+            }
+
+            /*
             if(!empty($pbNumber)) {
                 $this->session->set_flashdata(array("type" => "success", "notify" => "Data berhasil tersimpan dengan nomor Penerimaan ".$pbNumber));
             }
             else{
                 $this->session->set_flashdata(array("type" => "warning", "notify" => "Data gagal tersimpan"));
             }
+            */
 
             redirect("/pembelian/penerimaan/form");
         }
 
+        
         if(!empty($id)) {
             $this->container["header"] = $this->modelPenerimaan->getHeader($type, $id);
-            $this->container["detail"] = $this->modelPenerimaan->getDetail($type, $id);            
+            $this->container["detail"] = $this->modelPenerimaan->getDetail($type, $id);       
+            
         }
-        
+
+        if(strtoupper($type) === "PO") {
+            $this->container["trans_type"] = "new";
+        }
+        else{
+            $this->container["trans_type"] = "edit";
+        }
+       
         $isAuto = $this->helper->isAuto("penerimaan_barang", $this->session->userdata("sanitasDistDistributorID"));
         $this->container["is_auto"] = $isAuto;
 
@@ -130,7 +148,7 @@ class Penerimaan extends MX_Controller {
     public function listData()
     {
 
-        $sql = "SELECT b.`po_number`, e.`item_number`, e.`item_name`, f.`uom`, b.`tanggal_po`, c.`distributor_name`, c.`code` AS disti_code, 
+        $sql = "SELECT b.`po_number`, e.`item_number`, e.`item_name`, f.`uom`, b.`tanggal_po`, c.`distributor_name`, c.`code` AS disti_code, d.id as id_detail,
         c.`address`, SUM(d.`qty_po`) AS total_qty_po, SUM(d.`qty_pb`) AS total_qty_pb, SUM(d.`qty_sisa`) AS total_qty_sisa, a.* FROM trans_penerimaan a
         JOIN trans_po b ON b.`id`=a.`id_po`
         JOIN `mst_distributor` c ON c.`id`=a.`id_distributor`
@@ -166,7 +184,8 @@ class Penerimaan extends MX_Controller {
                 number_format($row->total_qty_sisa,2,",","."),
                 $row->uom, 
 				$row->status,
-				$row->id
+				$row->id,
+				$row->id_detail
 			);
 		}
 		
@@ -193,11 +212,14 @@ class Penerimaan extends MX_Controller {
         redirect("/pembelian/penerimaan/viewdetail/".$idPB);
     }
 
-    public function deleteData($id) 
-    {
+    public function deleteData($id, $idDetail) 
+    {   
+        /*
         $this->db->where("id", $id);
         $valid = $this->db->delete("trans_penerimaan");
-
+        */
+        
+        $this->db->where("id", $idDetail);
         $this->db->where("id_pb", $id);
         $valid = $this->db->delete("trans_penerimaan_detail");
 

@@ -27,11 +27,6 @@
                 <td><strong>{{to_date|date("d/m/Y")}}</strong></td>
             </tr>
             <tr>
-                <td>Calculate Date</td>
-                <td>&nbsp;:&nbsp;</td>
-                <td><strong>{{calculate_date|date("d/m/Y")}}</strong></td>
-            </tr>
-            <tr>
                 <td>Detail</td>
                 <td>&nbsp;:</td>
                 <td>
@@ -66,42 +61,27 @@
             {% set masihsaja = '' %}
             
             {% set amount_total1 = 0 %}
-            {% set payment_total1 = 0 %}
-            {% set remain_total1 = 0 %}
-            {% set due_date_belum1 = 0%}
-            {% set satu_kolom1 =  0%}
-            {% set dua_kolom1 = 0 %}
-            {% set tiga_kolom1 = 0 %}
-            {% set empat_kolom1 = 0 %}
-
+          
             {% for dt in data %}      
                 
-
+            
                 {% if masih != dt.customer_name and masih !=''%}   
                 
-                {% set masihsaja = dt.customer_name %}
-                {% set amount_total1 = dt.total_amount %}
-                {% set payment_total1 = dt.total_payment %}
-                {% set remain_total1 = dt.total_remain %}
-                {% set due_date_belum1 = dt.belum_due_date %}
-                {% set satu_kolom1 = dt.kolom_satu %}
-                {% set dua_kolom1 = dt.kolom_dua %}
-                {% set tiga_kolom1 = dt.kolom_tiga %}
-                {% set empat_kolom1 = dt.kolom_empat %}
+                    {% set masihsaja = dt.customer_name %}
+                    {% set amount_total1 =  dt.total_amount %}
 
-                <tr class="summary_row">
-                    <td align="right" colspan="7" style="font-weight: bold; text-transform: uppercase">TOTAL {{masih}}</td>                    
-                    <td align="right" style="font-weight: bold">{{amount_total|number_format(0,'.','.')}}</td>             
-                </tr>  
+                    {% if masih != dt.customer_name %} 
+                        <tr class="summary_row">
+                            <td align="right" colspan="7" style="font-weight: bold; text-transform: uppercase">TOTAL {{masih}}</td>                    
+                            <td align="right" style="font-weight: bold">{{amount_total|number_format(0,'.','.')}}</td>             
+                        </tr> 
+                        {% set amount_total = 0 %}
+                    {% endif %} 
+
                 {% else %}
-                {% set amount_total1 = amount_total1 + dt.total_amount %}
-                {% set payment_total1 = payment_total1 + dt.total_payment %}
-                {% set remain_total1 = remain_total1 + dt.total_remain %}
-                {% set due_date_belum1 = due_date_belum1 + dt.belum_due_date %}
-                {% set satu_kolom1 = satu_kolom1 + dt.kolom_satu %}
-                {% set dua_kolom1 = dua_kolom1 + dt.kolom_dua %}
-                {% set tiga_kolom1 = tiga_kolom1 + dt.kolom_tiga %}
-                {% set empat_kolom1 = empat_kolom1 + dt.kolom_empat %}
+                    {% set amount_total1 = amount_total1 + dt.total_amount %}
+                    {% set payment_total1 = payment_total1 + dt.total_payment %}
+                    {% set amount_total = 0 %}
                 {% endif %}
 
                 <tr>
@@ -114,16 +94,10 @@
                     <td>{{dt.invoice_date|date("d/m/Y")}}</td>    
                     <td align="right">{{dt.total_amount|number_format(0,'.','.')}}</td>  
                 </tr>
-                {% set masih = dt.customer_name %} 
-                {% set amount_total = amount_total + dt.total_amount %}
-                {% set payment_total = payment_total + dt.total_payment %}
-                {% set remain_total = remain_total + dt.total_remain %}
-                {% set due_date_belum = due_date_belum + dt.belum_due_date %}
-                {% set satu_kolom = satu_kolom + dt.kolom_satu %}
-                {% set dua_kolom = dua_kolom + dt.kolom_dua %}
-                {% set tiga_kolom = tiga_kolom + dt.kolom_tiga %}
-                {% set empat_kolom = empat_kolom + dt.kolom_empat %}
 
+                {% set masih = dt.customer_name %}                 
+                {% set amount_total = amount_total + dt.total_amount %}
+               
                 
             {% endfor %}
             <tr class="summary_row">

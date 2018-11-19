@@ -128,6 +128,6 @@ class Invoice extends MX_Controller {
         else{
             $this->session->set_flashdata(array("type" => "error", "notify" => "Data gagal terhapus!"));
         }
-        redirect("/pembelpenjualanian/purchaseorder/index");
+        redirect("/penjualan/invoice/index");
     }
 }

@@ -26,7 +26,7 @@ class Reportpenjualan extends MX_Controller {
         $this->twig->display("report/reportPenjualanFilter.html", $this->container);
     }
 
-    public function penjualanDisplay($fromDate, $toDate, $isDetail = "0")
+    public function penjualanDisplay($fromDate, $toDate, $isDetail = "0", $idDistributor = "0", $idItem = "0")
     {   
         $this->container["from_date"] = $fromDate;
         $this->container["to_date"] = $toDate;
@@ -34,12 +34,12 @@ class Reportpenjualan extends MX_Controller {
 
         
         if($isDetail == "1") {
-            $data = $this->modelReport->penjualanDetail($fromDate, $toDate, $isDetail);
+            $data = $this->modelReport->penjualanDetail($fromDate, $toDate, $idDistributor, $idItem);
             $this->container["data"] = $data;
             $this->twig->display("report/reportPenjualanDisplayDetail.html", $this->container);
         }
         else{
-            $data = $this->modelReport->penjualanRekap($fromDate, $toDate, $isDetail);
+            $data = $this->modelReport->penjualanRekap($fromDate, $toDate, $idDistributor, $idItem);
             $this->container["data"] = $data;
             $this->twig->display("report/reportPenjualanDisplayRekap.html", $this->container);
         }        

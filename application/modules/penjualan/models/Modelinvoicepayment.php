@@ -83,11 +83,17 @@ class modelInvoicePayment extends CI_Model {
 			$id_invoice = "id_invoice".$x;
 			$amount = "amount".$x;
 			$payment = "payment".$x;
-			$remain = "remain".$x;
+            $remain = "remain".$x;
+            
+            $sqlLast = "SELECT * FROM `trans_um_invoice_detail`
+                        WHERE `id_invoice`='".$args->$id_invoice."' AND id IN 
+                        (SELECT MAX(id) FROM trans_um_invoice_detail WHERE `id_invoice`='".$args->$id_invoice."')";
+            $dLast = $this->db->query($sqlLast)->row();
             
             $this->db->set("id_um", $umID);
             $this->db->set("id_invoice", $args->$id_invoice);			
-            $this->db->set("amount", $args->$amount);
+            $this->db->set("amount", $args->$amount);			
+            $this->db->set("remaining_amount", $dLast->remain);
             $this->db->set("payment", $args->$payment);
             $this->db->set("remain", $args->$remain);
             $this->db->set("add_user", $this->session->userdata("sanitasDistUserId"));			

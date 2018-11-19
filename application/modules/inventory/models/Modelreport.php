@@ -12,7 +12,7 @@ class modelReport extends CI_Model {
 	}	
     
     
-    public function penjualanRekap($fromDate, $toDate)
+    public function penjualanRekap($fromDate, $toDate, $idDistributor, $idItem)
     {
         $sql = "SELECT f.`item_number`, f.`item_name`, g.`uom`, SUM(b.`qty`) AS total_qty, c.`code` AS `distributor_code`, 
         c.`distributor_name`, d.`code`, d.`customer_name`, c.`asm_name`,  e.`sales_name`
@@ -31,17 +31,23 @@ class modelReport extends CI_Model {
             $idDistributor = $this->session->userdata("sanitasDistDistributorID");
             $sql.=" AND a.`id_distributor`='".$idDistributor."'";
         }
+        else{
+            if($idDistributor !== "0") {
+                $sql.=" AND a.`id_distributor`='".$idDistributor."'";
+            }
+        }
 
+        if($idItem !== "0") {
+            $sql.=" AND b.`id_item`='".$idItem."'";
+        }
 
         $sql.= " GROUP BY f.`id` ORDER BY f.`item_number`";
-
-        
               
         $query = $this->db->query($sql)->result();
         return $query;
     }
 
-    public function penjualanDetail($fromDate, $toDate)
+    public function penjualanDetail($fromDate, $toDate, $idDistributor, $idItem)
     {
         $sql = "SELECT f.`item_number`, f.`item_name`, g.`uom`, SUM(b.`qty`) AS total_qty, c.`code` AS `distributor_code`, 
         c.`distributor_name`, d.`code`, d.`customer_name`, c.`asm_name`,  e.`sales_name`
@@ -62,9 +68,18 @@ class modelReport extends CI_Model {
             $idDistributor = $this->session->userdata("sanitasDistDistributorID");
             $sql.=" AND a.`id_distributor`='".$idDistributor."'";
         }
+        else{
+            if($idDistributor !== "0") {
+                $sql.=" AND a.`id_distributor`='".$idDistributor."'";
+            }
+        }
+
+        if($idItem !== "0") {
+            $sql.=" AND b.`id_item`='".$idItem."'";
+        }
 
 
-        $sql.= " GROUP BY f.`id` ORDER BY f.`item_number`";
+        $sql.= " GROUP BY d.`id`, f.`id` ORDER BY f.`item_number`";
 
         $query = $this->db->query($sql)->result();
         return $query;
@@ -108,28 +123,29 @@ class modelReport extends CI_Model {
     }
 
     public function stockOnHand($fromDate, $toDate, $idDistributor = "0", $idItem = "0") {
+        //echo "sss";
         $sql = "SELECT p.`code` AS distributor_code, p.`distributor_name`, a.*, IFNULL(b.saldo_awal,0) AS saldo_awal, IFNULL(d.saldo_jual,0) AS saldo_jual, (IFNULL(b.saldo_awal,0) - IFNULL(d.saldo_jual,0)) AS saldo_akhir, c.last_selling_date FROM (
-                    SELECT w.id_item, w.id_distributor, mst_item.`item_number`, mst_item.`item_name`, `mst_uom`.`uom`, SUM(w.qty_beli) AS qty_beli, IFNULL(SUM(z.qty_jual),0) AS qty_jual
+                    SELECT w.tanggal, w.id_item, w.id_distributor, mst_item.`item_number`, mst_item.`item_name`, `mst_uom`.`uom`, SUM(w.qty_beli) AS qty_beli, IFNULL(SUM(z.qty_jual),0) AS qty_jual
                     FROM mst_item JOIN `mst_uom` ON `mst_uom`.`id`=mst_item.`id_uom`
                     JOIN (
-                        SELECT  b.`id_distributor`, a.`id_item`, a.`qty_pb`  AS qty_beli FROM `trans_penerimaan_detail` a 
+                        SELECT b.`tanggal_pb` as tanggal, b.`id_distributor`, a.`id_item`, a.`qty_pb`  AS qty_beli FROM `trans_penerimaan_detail` a 
                         JOIN `trans_penerimaan` b ON b.`id`=a.`id_pb`
                         WHERE b.`tanggal_pb` BETWEEN '".$fromDate."' AND '".$toDate."' AND b.`status`='receive'
                         
                     ) w ON w.id_item = mst_item.`id`
                     LEFT JOIN (
-                        SELECT b.`id_distributor`, a.`id_item`, a.`qty` AS qty_jual FROM `trans_invoice_detail` a 
+                        SELECT b.`invoice_date` as tanggal, b.`id_distributor`, a.`id_item`, a.`qty` AS qty_jual FROM `trans_invoice_detail` a 
                         JOIN `trans_invoice` b ON  b.`id`=a.`id_invoice`
                         WHERE b.`invoice_date` BETWEEN '".$fromDate."' AND '".$toDate."' AND b.`status`='approve'
-                    ) z ON z.id_item = mst_item.`id`
+                    ) z ON z.id_item = mst_item.`id` and z.tanggal=w.tanggal
                     GROUP BY mst_item.`id`
                 ) a  
                 LEFT JOIN (
                     
-                    SELECT w.id_item, w.id_distributor, mst_item.`item_number`, mst_item.`item_name`, `mst_uom`.`uom`, IFNULL(SUM(w.qty_beli),0) AS saldo_awal
+                    SELECT w.tanggal, w.id_item, w.id_distributor, mst_item.`item_number`, mst_item.`item_name`, `mst_uom`.`uom`, IFNULL(SUM(w.qty_beli),0) AS saldo_awal
                     FROM mst_item JOIN `mst_uom` ON `mst_uom`.`id`=mst_item.`id_uom`
                     JOIN (
-                        SELECT  b.`id_distributor`, a.`id_item`, a.`qty_pb`  AS qty_beli FROM `trans_penerimaan_detail` a 
+                        SELECT b.`tanggal_pb` as tanggal, b.`id_distributor`, a.`id_item`, a.`qty_pb`  AS qty_beli FROM `trans_penerimaan_detail` a 
                         JOIN `trans_penerimaan` b ON b.`id`=a.`id_pb`
                         WHERE b.`tanggal_pb` < '".$fromDate."' AND b.`status`='receive'
                         
@@ -137,22 +153,22 @@ class modelReport extends CI_Model {
                     
                     GROUP BY mst_item.`id`
                 
-                ) b ON a.id_item=b.id_item AND a.id_distributor=b.id_distributor
+                ) b ON a.id_item=b.id_item AND a.id_distributor=b.id_distributor and a.tanggal=b.tanggal
                 
                 LEFT JOIN (
-                    SELECT w.id_item, w.id_distributor, mst_item.`item_number`, mst_item.`item_name`, `mst_uom`.`uom`, IFNULL(SUM(w.qty_jual),0) AS saldo_jual
+                    SELECT w.tanggal, w.id_item, w.id_distributor, mst_item.`item_number`, mst_item.`item_name`, `mst_uom`.`uom`, IFNULL(SUM(w.qty_jual),0) AS saldo_jual
                     FROM mst_item JOIN `mst_uom` ON `mst_uom`.`id`=mst_item.`id_uom`
                     JOIN (
-                        SELECT b.`id_distributor`, a.`id_item`, a.`qty` AS qty_jual FROM `trans_invoice_detail` a 
+                        SELECT b.`invoice_date` as tanggal, b.`id_distributor`, a.`id_item`, a.`qty` AS qty_jual FROM `trans_invoice_detail` a 
                         JOIN `trans_invoice` b ON  b.`id`=a.`id_invoice`
                         WHERE b.`invoice_date`  BETWEEN '".$fromDate."' AND '".$toDate."' AND b.`status`='approve'
                         
                     ) w ON w.id_item = mst_item.`id` GROUP BY mst_item.`id`
-                ) d ON a.id_item=d.id_item AND a.id_distributor=d.id_distributor                
+                ) d ON a.id_item=d.id_item AND a.id_distributor=d.id_distributor and a.tanggal=d.tanggal               
                 
                 LEFT JOIN (
                     
-                    SELECT b.invoice_date AS last_selling_date, b.`id_distributor`, a.`id_item` FROM `trans_invoice_detail` a 
+                    SELECT b.invoice_date as tanggal, b.invoice_date AS last_selling_date, b.`id_distributor`, a.`id_item` FROM `trans_invoice_detail` a 
                     JOIN `trans_invoice` b ON  b.`id`=a.`id_invoice`
                     WHERE b.`invoice_date` BETWEEN '".$fromDate."' AND '".$toDate."' AND b.`status`='approve'
                     AND b.id IN (
@@ -163,7 +179,7 @@ class modelReport extends CI_Model {
                     )
                     GROUP BY b.id, a.id_item
                 
-                ) c ON a.id_item=c.id_item AND a.id_distributor=c.id_distributor
+                ) c ON a.id_item=c.id_item AND a.id_distributor=c.id_distributor AND a.tanggal=c.tanggal
                 LEFT JOIN `mst_distributor` p ON p.`id`=a.id_distributor WHERE 1=1";
                 
             if($idDistributor !=="0") {
@@ -171,9 +187,11 @@ class modelReport extends CI_Model {
             }
             
             if($idItem !=="0") {
+                
                 $sql.=" AND a.`id_item`='".$idItem."'";
             }
             
+            //$sql.="GROUP BY a.id_distributor, a.id_item";
             $query = $this->db->query($sql);
             return $query->result();
     }

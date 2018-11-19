@@ -12,7 +12,8 @@
     <link rel="shortcut icon" href="{{base_url}}assets/img/icon.png" />
     <meta name="msapplication-TileImage" content="{{base_url}}assets/img/metis-tile.png" />
     {% include 'header_plugins.html' %}
- 
+    <script src="https://rawgit.com/plentz/jquery-maskmoney/master/dist/jquery.maskMoney.min.js"></script>
+
     <style type="text/css">
     .navbar-inverse {
         background-color: #d2cfcf  !important;
@@ -42,6 +43,23 @@
             <script src="{{base_url}}assets/js/core.js"></script>
             <script src="{{base_url}}assets/js/app.js"></script>
             <script type="text/javascript">
+
+                $(".currency").maskMoney({
+                    precision:0,
+                    decimal:'.'
+                });
+
+                $('form').on('submit', function(e) {
+                    var v = $(".currency").maskMoney('destroy').val()
+                            .replace(/[.,]/g, '');
+                    $("#currency").val(v);
+                    //
+                    // The following line is only for test....
+                    //
+                    e.preventDefault();
+                });
+
+
                 function openPopup(url)
                 {
                    $.fancybox.open({

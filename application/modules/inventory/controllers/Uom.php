@@ -79,7 +79,7 @@ class Uom extends MX_Controller {
         else{
             $this->session->set_flashdata(array("type" => "warning", "notify" => "Data gagal terhapus! data tersebut di gunakan di transaksi lain"));
         }
-        redirect("/iventory/uom/index");
+        redirect("/inventory/uom/index");
     }
 
 }

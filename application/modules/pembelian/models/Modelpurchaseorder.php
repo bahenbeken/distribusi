@@ -47,7 +47,9 @@ class modelPurchaseOrder extends CI_Model {
             $this->db->set("add_user", $this->session->userdata("sanitasDistUserId"));
 			$this->valid = $this->db->insert("trans_po");
 			$poID = $this->db->insert_id();
-		}
+        }
+        
+       
 		
 		$this->db->where("id_po", $poID);
 		$this->db->delete("trans_po_detail");
@@ -69,7 +71,7 @@ class modelPurchaseOrder extends CI_Model {
 			$valid = $this->db->insert("trans_po_detail");
 			
 		}
-
+        
         return $poNumber;
     }
 

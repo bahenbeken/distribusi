@@ -59,17 +59,21 @@ class modelPenerimaan extends CI_Model {
 			$qty_po = "qty_po".$x;
             $qty_sisa = "qty_sisa".$x;
             
-            if($args->$qty_sisa > 0) {
-                $finish = false;
-            }
 
-			$this->db->set("id_pb", $pbID);			
-			$this->db->set("id_item", $args->$id_item);
-			$this->db->set("qty_po", $args->$qty_po);
-			$this->db->set("qty_pb", $args->$qty_pb);
-			$this->db->set("qty_sisa", $args->$qty_sisa);
-			$this->db->set("add_user", $this->session->userdata("sanitasDistUserId"));
-			$valid = $this->db->insert("trans_penerimaan_detail");
+            if($args->$qty_pb > 0) {
+                if($args->$qty_sisa > 0) {
+                    $finish = false;
+                }
+    
+                $this->db->set("id_pb", $pbID);			
+                $this->db->set("id_item", $args->$id_item);
+                $this->db->set("qty_po", $args->$qty_po);
+                $this->db->set("qty_pb", $args->$qty_pb);
+                $this->db->set("qty_sisa", $args->$qty_sisa);
+                $this->db->set("add_user", $this->session->userdata("sanitasDistUserId"));
+                $this->valid = $this->db->insert("trans_penerimaan_detail");
+            }
+            
 			
         }
         
@@ -79,8 +83,14 @@ class modelPenerimaan extends CI_Model {
             //$this->db->where("id_po", $args->id_po);
             //$this->valid = $this->db->update("trans_penerimaan");
         //}
-
-        return $pbNumber;
+        
+        if($this->valid) {
+            return $pbNumber;
+        }
+        else{
+            return false;
+        }
+        
     }
 
     public function getHeader($type, $id) {
@@ -116,18 +126,22 @@ class modelPenerimaan extends CI_Model {
             $lineS = $queryS->num_rows();
 
             if($lineS > 0) {
-                $sql = "SELECT e.`is_fixed_price`, b.`item_name`, b.`item_number`, c.`uom`, a.`qty` AS qty_po, 0 as qty_pb, z.qty_pb as qty_pb_udah, a.`qty` - z.qty_pb AS qty_sisa, a.* FROM trans_po_detail a
+                $sql = "SELECT e.`is_fixed_price`, b.`item_name`, b.`item_number`, c.`uom`, a.`qty` AS qty_po, 0 as qty_pb, 
+                    IFNULL(z.qty_pb,0) as qty_pb_udah, a.`qty` - IFNULL(z.qty_pb,0) AS qty_sisa, 
+                    a.* FROM trans_po_detail a
                     JOIN mst_item b ON a.`id_item`=b.`id`
                     JOIN mst_uom c ON c.`id`=b.`id_uom`
                     JOIN `trans_po` d ON d.`id`=a.`id_po`
                     JOIN `mst_harga_distributor` e ON e.`id_distributor`=d.`id_distributor` AND e.`id_item`=a.`id_item`
-                    JOIN (
+                    LEFT JOIN (
                         SELECT b.`id_po`, a.id_item, SUM(a.qty_pb) AS qty_pb FROM `trans_penerimaan_detail` a
                         JOIN trans_penerimaan b ON b.`id`=a.`id_pb`
                         WHERE a.`id_pb` IN (SELECT id FROM `trans_penerimaan` WHERE `id_po`='".$id."')
                         GROUP BY id_item
                     ) z ON z.id_item=a.id_item AND z.id_po=a.id_po
                     WHERE a.`id_po`='".$id."'";
+
+              
             }
             else{
                 $sql = "SELECT e.`is_fixed_price`, b.`item_name`, b.`item_number`, c.`uom`, a.`qty` as qty_po, 0 as qty_pb, 0 as qty_pb_udah, a.`qty` - 0 as qty_sisa, a.* FROM trans_po_detail a
@@ -136,15 +150,17 @@ class modelPenerimaan extends CI_Model {
                     JOIN `trans_po` d ON d.`id`=a.`id_po`
                     JOIN `mst_harga_distributor` e ON e.`id_distributor`=d.`id_distributor` AND e.`id_item`=a.`id_item`
                     WHERE a.`id_po`='".$id."'";
+                 
             }
 
             
         }
         else{
-            $sql = "SELECT b.`item_number`, b.`item_name`, c.`uom`, a.* FROM `trans_penerimaan_detail` a
+            $sql = "SELECT a.qty_pb as qty_pb_udah, b.`item_number`, b.`item_name`, c.`uom`, a.* FROM `trans_penerimaan_detail` a
             JOIN mst_item b ON b.`id`=a.`id_item`
             JOIN mst_uom c ON c.id=b.`id_uom`
             WHERE a.`id_pb`='".$id."'";
+
         }
         $data = $this->db->query($sql)->result();
         

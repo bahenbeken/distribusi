@@ -3,8 +3,8 @@
 <div class="col-md-12">
   <div class="box primary">
       <header class="text-success">
-          <div class="icons"><i class="fa fa-shopping-cart"></i></div>
-          <h5>SALES REPORT</h5>
+          <div class="icons"><i class="fa fa-file"></i></div>
+          <h5>LAPORAN PENJUALAN PER ITEM</h5>
       </header>
   </div>
 </div>
@@ -26,6 +26,50 @@
                 <div class="col-lg-6">
                     <input type="date" class="form-control" id="to_date" name="to_date">
                 </div>
+            </div>
+
+            {% if session.userdata.sanitasDistLevel == "asm" %}
+            <div class="form-group">
+                <label for="text1" class="control-label col-lg-5">Distributor</label>
+                <div class="col-lg-7">
+                    <input type="hidden" name="id_distributor" id="id_distributor" value="{{session.userdata.sanitasDistDistributorID}}">
+                    <table  border="0" cellpadding="0px" cellspacing="0px" style="margin: 0px">
+                        <tr>
+                            <td style="width:30%;"><input type="text" class="form-control" placeholder="Kode" id="code" name="code" value="{{session.userdata.sanitasDistDistributorCode}}" readonly></td>
+                            <td style="width:70%;"><input type="text" class="form-control" placeholder="Nama" id="distributor_name" name="distributor_name" value="{{session.userdata.sanitasDistDistributorName}}" readonly></td>
+                            <td><div style="margin:0px !important; opacity:0 !important; cursor:unset !important;" class="btn btn-default-blue"><i class="fa fa-search"></i></div></td>
+                        </td>
+                    </table>                    
+                </div>                
+            </div> 
+            {% else %}  
+            <div class="form-group">
+                <label for="text1" class="control-label col-lg-5">Distributor</label>
+                <div class="col-lg-7">
+                    <input type="hidden" name="id_distributor" id="id_distributor" value="{{header.id_distributor}}">
+                    <table  border="0" cellpadding="0px" cellspacing="0px" style="margin: 0px">
+                        <tr>
+                            <td style="width:30%;"><input type="text" class="form-control" placeholder="Kode" id="code" name="code" value="{{header.distributor_code}}" readonly></td>
+                            <td style="width:70%;"><input type="text" class="form-control" placeholder="Nama" id="distributor_name" name="distributor_name" value="{{header.distributor_name}}" readonly></td>
+                            <td><div style="margin:0px !important;" class="btn btn-default-blue"  onclick="openPopup('{{base_url}}masterdata/distributor/popupbrowse/', '80%', '80%');"><i class="fa fa-search"></i></div></td>
+                        </td>
+                    </table>                    
+                </div>                
+            </div> 
+            {% endif %}   
+            
+            <div class="form-group">
+                <label for="text1" class="control-label col-lg-5">Item Number</label>
+                <div class="col-lg-7">
+                    <input type="hidden" name="id_item" id="id_item" value="{{header.id_item}}">
+                    <table  border="0" cellpadding="0px" cellspacing="0px" style="margin: 0px">
+                        <tr>
+                            <td style="width:30%;"><input type="text" class="form-control" placeholder="Kode" id="item_number" name="item_number" value="{{header.item_number}}" readonly></td>
+                            <td style="width:70%;"><input type="text" class="form-control" placeholder="Nama" id="item_name" name="item_name" value="{{header.item_name}}" readonly></td>
+                            <td><div style="margin:0px !important;" class="btn btn-default-blue" onclick="openPopup('{{base_url}}inventory/item/itemmasterpopup/', '80%', '80%');"><i class="fa fa-search"></i></div></td>
+                        </td>
+                    </table>                    
+                </div>                
             </div>
 
             <div class="form-group">
@@ -54,9 +98,7 @@ function customerAction(){
     return false;
 }
 function distributorAction(){
-    $("#id_customer").val('');
-    $("#customer_code").val('');
-    $("#customer_name").val('');
+    return false;
 }
 function browseCustomer() {
     var id_distributor = $("#id_distributor").val();
@@ -76,9 +118,19 @@ function displayReport() {
     if($('#is_detail').is(':checked')) {
         is_detail = "1";
     }
+
+    var id_distributor = "0";
+    if($('#id_distributor').val() != "") {
+        id_distributor = $("#id_distributor").val();
+    }
+
+    var id_item = "0";
+    if($('#id_item').val() != "") {
+        id_item = $("#id_item").val();
+    }
     
     if(from_date !=="" && to_date !=="") {
-        openPopup('{{base_url}}inventory/reportpenjualan/penjualandisplay/'+from_date+'/'+to_date+'/'+is_detail, '100%', '100%');
+        openPopup('{{base_url}}inventory/reportpenjualan/penjualandisplay/'+from_date+'/'+to_date+'/'+is_detail+'/'+id_distributor+'/'+id_item, '100%', '100%');
     }
     else{
         toastr["error"]("Anda harus memilih Tanggal (From Date, To Date)", "Notification");

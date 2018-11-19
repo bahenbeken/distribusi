@@ -72,8 +72,8 @@ $(document).ready(function() {
 
     $('#dataList tbody').on('click', 'tr', function () {
         var dt = table.row(this).data();
-        window.parent.$("#item_number").val(dt[1]);
-        window.parent.$("#item_name").val(dt[2]);        
+        window.parent.$("#item_number").val(dt[0]);
+        window.parent.$("#item_name").val(dt[1]);        
         window.parent.$("#id_item").val(dt[4]);
         window.parent.$.fancybox.close();
     });

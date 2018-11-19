@@ -9,9 +9,6 @@
 <div class="col-md-12">
 <form class="form-horizontal" action="" method="post" id="formsubmit">
     <input type="hidden" name="id" id="id" value="{{ header.id }}">
-    <input type="hidden" name="trans_type" id="trans_type" value="{{ trans_type }}">
-
-    
     <div class="col-lg-12">
         <div class="col-lg-5">
             <div class="form-group">
@@ -91,7 +88,7 @@
                     <td><input type="text" class="form-control" id="item_name{{x}}" name="item_name{{x}}" value="{{det.item_name}}" readonly></td>
                     <td><input type="text" class="form-control" id="uom{{x}}" name="uom{{x}}" value="{{det.uom}}" readonly></td>
                     <td><input type="text" class="form-control" id="qty_po{{x}}" name="qty_po{{x}}" value="{{det.qty_po}}" readonly></td>
-                    <td><input type="text" class="form-control" id="qty_pb{{x}}" name="qty_pb{{x}}" value="{{det.qty_pb}}" onblur="hitungQty('{{x}}')"></td>
+                    <td><input type="text" class="form-control" id="qty_pb{{x}}" name="qty_pb{{x}}" value="{{det.qty_pb}}" onkeyup="hitungQty('{{x}}')"></td>
                     <td><input type="text" class="form-control" id="qty_sisa{{x}}" name="qty_sisa{{x}}" value="{{det.qty_sisa}}" readonly></td>
                 </tr> 
                 {% endfor %}
@@ -158,26 +155,15 @@ function hitungQty(num) {
     var qty_pb_udah = $("#qty_pb_udah"+num).val();    
     var qty_pb = $("#qty_pb"+num).val();    
     var qty_po = $("#qty_po"+num).val();
-    var qty_sisa_yang_udah = $("#qty_sisa"+num);
-
     if(isNaN(qty_pb) == false) {
         var keterima = parseFloat(qty_pb) + parseFloat(qty_pb_udah);
-        
-        if($("#trans_type").val() == "edit") {
-            keterima = parseFloat(qty_pb);
-        }
-        
         var qty_sisa = qty_po - keterima
-       
         if(qty_sisa >= 0) {
             $("#qty_sisa"+num).val(qty_sisa);
         }
         else{
-            //var sisa = qty_po - qty_pb_udah
-            //$("#qty_sisa"+num).val(sisa);
-            $("#qty_pb"+num).val(qty_pb_udah);
+            $("#qty_pb"+num).val(qty_po);
             toastr["error"]("Quantity Terima tidak bisa lebih dari quantity order!", "Notification");
-            hitungQty(num);
         }
     }
     else{

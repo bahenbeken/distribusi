@@ -40,7 +40,8 @@ class Main extends MX_Controller {
         }
 
         $yesterday = date('Y-m-d',strtotime("-1 days"));
-        $data = $this->modelReport->stockOnHand($yesterday, date("Y-m-d"), $idDistributor, "0");
+        $liveDate = "2018-04-01";
+        $data = $this->modelReport->stockOnHand($liveDate, $yesterday, $idDistributor, "0");
         $x = 0;
 		foreach($data as $row) { 
             $date = date_create($row->last_selling_date);

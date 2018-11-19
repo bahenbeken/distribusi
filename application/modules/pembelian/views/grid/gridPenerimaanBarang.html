@@ -28,6 +28,7 @@
                 <th>UOM</th>
                 <th>Status</th>
                 <th>Process</th>
+                <th>detail</th>
             </tr>
             <tr>
                 <td>No.</td>
@@ -44,6 +45,7 @@
                 <td>UOM</td>
                 <td>Status</td>
                 <td>Process</td>
+                <th>detail</th>
             </tr>
         </thead>        
     </table>
@@ -72,7 +74,7 @@ $(document).ready(function() {
                 "visible": false,
                 "searchable": false
             },{
-            "targets": -1,
+            "targets": 13,
             "data": null,
             "defaultContent": "<detail class='fa fa-search' title='View detail atau rubah status'></detail> <modify class='fa fa-pencil tips' title='Tombol untuk merubah data!'></modify> <remove class='fa fa-trash tips' title='Tombol untuk menghapus data!'></remove>",
             "width": "80px",
@@ -85,7 +87,12 @@ $(document).ready(function() {
         },{
             "targets": 9,
             className:'text-right'
-        }],
+        },
+        {
+                "targets": 14,
+                "visible": false,
+                "searchable": false
+            }],
         "order": [[ 5, "desc" ]],
         "bSortCellsTop": true,
         "pageLenght" : 25,
@@ -102,13 +109,13 @@ $(document).ready(function() {
 
     $('#dataList tbody').on('click', 'detail', function () {
         var data = table.row($(this).parents('tr')).data();
-        openPopup("{{base_url}}pembelian/penerimaan/viewdetail/PB/"+data[11], "100%", "100%");
+        openPopup("{{base_url}}pembelian/penerimaan/viewdetail/PB/"+data[13], "100%", "100%");
     });
 
     $('#dataList tbody').on('click', 'modify', function () {
         var data = table.row($(this).parents('tr')).data();
-        if(data[10] == "draft") {
-            openPopup("{{base_url}}pembelian/penerimaan/form/pb/"+data[11], "100%", "100%");
+        if(data[12] == "draft") {
+            openPopup("{{base_url}}pembelian/penerimaan/form/pb/"+data[13], "100%", "100%");
         }
         else{
             toastr["error"]("Purchase order tersebut telah melewati status submit, data tidak bisa di edit!", "Notification");
@@ -118,8 +125,8 @@ $(document).ready(function() {
 
     $('#dataList tbody').on('click', 'remove', function () {
         var data = table.row($(this).parents('tr')).data();
-        if(data[10] == "draft") {
-            confirmThis("{{base_url}}pembelian/purchaseorder/deletedata/"+data[7], "Anda yakin ingin menghapus transaksi tersebut?");
+        if(data[12] == "draft") {
+            confirmThis("{{base_url}}pembelian/penerimaan/deletedata/"+data[13]+'/'+data[14], "Anda yakin ingin menghapus transaksi tersebut?");
         }
         else{
             toastr["error"]("Purchase order tersebut telah melewati status submit, data tidak bisa di hapus!", "Notification");

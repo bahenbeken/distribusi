@@ -16,13 +16,13 @@
             <tr>
                 <th>Username</th>
                 <th>Type</th>
-                <th>Distributor</th>
+                <th>ASM</th>
                 <th>Process</th>
             </tr>
             <tr>
                 <td>Username</td>
                 <td>Type</td>
-                <td>Distributor</td>
+                <td>ASM</td>
                 <td>Process</td>
             </tr>
         </thead>        
@@ -74,7 +74,7 @@ $(document).ready(function() {
 
     $('#dataList tbody').on('click', 'remove', function () {
         var data = table.row($(this).parents('tr')).data();
-        confirmThis("{{base_url}}masterdata/distributor/deletedata/"+data[3], "Anda yakin ingin menghapus data tersebut?");
+        confirmThis("{{base_url}}masterdata/utility/deleteuser/"+data[3], "Anda yakin ingin menghapus data tersebut?");
     });
 
     if($('.dataTables_empty').length){

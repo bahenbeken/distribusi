@@ -4,27 +4,28 @@
   <div class="box primary">
       <header class="text-success">
           <div class="icons"><i class="fa fa-file-archive-o"></i></div>
-          <h5>INVOICE</h5>
+          <h5>INVOICE PAYMENT</h5>
       </header>
   </div>
 </div>
 
 <div class="col-md-12">
-    <a href="{{base_url}}penjualan/invoice/form.html" class="btn btn-default-blue openPopup tips addButton" title='Buat baru' data-width="100%" data-height="100%"><i class="fa fa-plus"></i>&nbsp;Transaksi Baru</a>
+    <a href="{{base_url}}penjualan/invoicepayment/form.html" class="btn btn-default-blue openPopup tips addButton" title='Buat baru' data-width="100%" data-height="100%"><i class="fa fa-plus"></i>&nbsp;Transaksi Baru</a>
     <table id="dataList" class="display" cellspacing="0" width="100%">
         <thead>
+               
             <tr>
                 <th>No.</th>
                 <th>Inv. Number</th>
-                <th>Customer</th>
+                <th>Pelanggan</th>
                 <th>Distributor</th>
                 <th>Sales</th>
-                <th>Inv. Date</th>
-                <th>Due Date</th>
-                <th>Total Item</th>                
-                <th>Amount</th>
+                <th>Tanggal UM</th>          
+                <th>Total</th>                
+                <th>Terbayar</th>                
+                <th>Sisa</th>             
                 <th>Status</th>
-                <th>Process</th>
+                <th>Proses</th>
             </tr>
             <tr>
                 <td>No.</td>
@@ -32,12 +33,12 @@
                 <td>Customer</td>
                 <td>Distributor</td>
                 <td>Sales</td>
-                <td>Inv. Date</td>
-                <td>Due Date</td>
-                <td>Total Item</td>                
-                <td>Amount</td>
+                <td>Tanggal UM</td>               
+                <td>Total</td>                
+                <td>Paid</td>                
+                <td>Sisa</td>             
                 <td>Status</td>
-                <td>Process</td>
+                <td>Proses</td>
             </tr>
         </thead>        
     </table>
@@ -60,28 +61,18 @@ $(document).ready(function() {
 
   	// DataTable
   	var table = $('#dataList').DataTable({
-        ajax: "{{ base_url }}penjualan/invoice/listdata.html",  
+        ajax: "{{ base_url }}penjualan/invoicepayment/listdata.html",  
         columnDefs: [ {
             "targets": 0,
             "visible": false,
             "searchable": false
-        },{
-            "targets": 7,
-            "visible": false,
-            "searchable": false
-        },{
-            "targets": 5,
-            "type": 'date-euro'
-        },{
-            "targets": 6,
-            "type": 'date-euro'
         },{
             "targets": -1,
             "data": null,
             "defaultContent": "<detail class='fa fa-search' title='View detail atau rubah status'></detail> <modify class='fa fa-pencil tips' title='Tombol untuk merubah data!'></modify> <remove class='fa fa-trash tips' title='Tombol untuk menghapus data!'></remove>",
             "width": "80px",
         }],
-        "order": [[ 5, "desc" ]],
+        "order": [[ 9, "desc" ]],
         "bSortCellsTop": true,
         "pageLenght" : 25,
         "searching": true,
@@ -97,27 +88,21 @@ $(document).ready(function() {
 
     $('#dataList tbody').on('click', 'detail', function () {
         var data = table.row($(this).parents('tr')).data();
-        openPopup("{{base_url}}penjualan/invoice/viewdetail/"+data[10], "100%", "100%");
+        openPopup("{{base_url}}penjualan/invoicepayment/viewdetail/"+data[10], "100%", "100%");
     });
 
     $('#dataList tbody').on('click', 'modify', function () {
         var data = table.row($(this).parents('tr')).data();
-        if(data[9] == "draft") {
-            openPopup("{{base_url}}penjualan/invoice/form/"+data[10], "100%", "100%");
-        }
-        else{
-            toastr["error"]("Invoice tersebut telah melewati status submit, data tidak bisa di edit!", "Notification");
-        }
-        
+        openPopup("{{base_url}}penjualan/invoicepayment/form/UM/"+data[10], "100%", "100%");        
     });
 
     $('#dataList tbody').on('click', 'remove', function () {
         var data = table.row($(this).parents('tr')).data();
         if(data[9] == "draft") {
-            confirmThis("{{base_url}}penjualan/invoice/deletedata/"+data[10], "Anda yakin ingin menghapus transaksi tersebut?");
+            confirmThis("{{base_url}}penjualan/invoicepayment/deletedata/"+data[10], "Anda yakin ingin menghapus transaksi tersebut?");
         }
         else{
-            toastr["error"]("Invoice tersebut telah melewati status submit, data tidak bisa di hapus!", "Notification");
+            toastr["error"]("Purchase order tersebut telah melewati status submit, data tidak bisa di hapus!", "Notification");
         }
 
     });

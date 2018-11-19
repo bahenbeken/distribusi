@@ -51,7 +51,7 @@ class Invoicepayment extends MX_Controller {
         
         $this->twig->display("form/formInvoicePayment.html", $this->container);
     }    
-
+    /*
     public function listData()
     {   
         $sql = "SELECT SUM(e.`amount`) AS rekap_amount, SUM(e.`payment`) AS rekap_payment, SUM(e.`remain`) AS rekap_remain,
@@ -78,6 +78,7 @@ class Invoicepayment extends MX_Controller {
             $responce->data[] = array(
                 $x,
 				$row->um_number, 
+				$row->invoice_numbers, 
 				$row->customer_name, 
 				$row->disti_code." - ".$row->distributor_name, 
 				$row->sales_code." - ".$row->sales_name,  
@@ -87,6 +88,55 @@ class Invoicepayment extends MX_Controller {
 				$row->rekap_remain,
 				$row->status,
 				$row->id
+			);
+        }
+        
+		
+		echo json_encode($responce);
+    }
+    */
+    public function listData()
+    {   
+        $sql = "SELECT f.id as id_detail, ifnull(SUM(e.`remaining_amount`), SUM(e.`amount`)) AS rekap_amount, SUM(e.`payment`) AS rekap_payment, SUM(e.`remain`) AS rekap_remain,
+        COUNT(e.`id_invoice`) AS total_invoice, GROUP_CONCAT(f.`invoice_number`) AS invoice_numbers,
+        b.`customer_name`, b.`code` AS customer_code, c.`code` AS disti_code, c.`distributor_name`, d.`code` AS sales_code,
+        date_format(f.invoice_date,'%m/%d/%y') as invoice_date, date_format(f.due_date,'%m/%d/%y') as due_date, 
+        d.`sales_name`, a.* FROM `trans_um_invoice` a
+        JOIN `mst_customer` b ON b.`id`=a.`id_customer`
+        JOIN `mst_distributor` c ON c.`id`=a.`id_distributor`
+        JOIN `mst_sales_person` d ON d.`id`=a.`id_sales`
+        LEFT JOIN `trans_um_invoice_detail` e ON e.`id_um`=a.`id`
+        LEFT JOIN `trans_invoice` f ON f.`id`=e.`id_invoice`";
+        
+        if(!empty($this->session->userdata("sanitasDistDistributorID"))) {
+            $idDistributor = $this->session->userdata("sanitasDistDistributorID");
+            $sql.=" WHERE a.`id_distributor`='".$idDistributor."'";
+        }
+
+        $sql.= "  GROUP BY a.`id`, f.id ORDER BY a.`id` DESC";
+
+        $data = $this->db->query($sql)->result();
+        $x = 0;
+		foreach($data as $row) { 
+			$x++;
+            $responce->data[] = array(
+                $x,
+				$row->um_number, 
+				$row->invoice_numbers, 
+				$row->invoice_date, 
+				$row->due_date, 
+				$row->customer_name, 
+				$row->disti_code." - ".$row->distributor_name, 
+				$row->sales_code." - ".$row->sales_name,  
+				date_format(date_create($row->payment_date), "d/m/Y"), 
+				$row->rekap_amount, 
+				$row->rekap_payment, 
+				$row->rekap_remain,
+                //number_format($row->rekap_amount - $row->rekap_payment, 2, '.', ''), 
+				
+                $row->status,
+				$row->id,
+				$row->id_detail
 			);
         }
         
@@ -114,14 +164,16 @@ class Invoicepayment extends MX_Controller {
         redirect("/penjualan/invoicepayment/viewdetail/".$idUM);
     }
 
-    public function deleteData($id) 
+    public function deleteData($id, $idDetail) 
     {
+        /*
         $this->db->where("id", $id);
         $valid = $this->db->delete("trans_invoice");
-
-        $this->db->where("id_invoice", $id);
-        $valid = $this->db->delete("trans_invoice_detail");
-
+        */
+        $this->db->where("id_invoice", $idDetail);
+        $this->db->where("id_um", $id);
+        $valid = $this->db->delete("trans_um_invoice_detail");
+        
         
         if($valid) {
             $this->session->set_flashdata(array("type" => "success", "notify" => "Data berhasil dihapus!"));
@@ -129,6 +181,6 @@ class Invoicepayment extends MX_Controller {
         else{
             $this->session->set_flashdata(array("type" => "error", "notify" => "Data gagal terhapus!"));
         }
-        redirect("/pembelpenjualanian/purchaseorder/index");
+        redirect("/penjualan/invoicepayment/index");
     }
 }

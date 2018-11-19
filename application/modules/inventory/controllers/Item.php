@@ -100,7 +100,7 @@ class Item extends MX_Controller {
     public function itemMasterPopup()
     {
        
-        $this->twig->display("popup/popUpMasteritem.html", $this->container);
+        $this->twig->display("popup/popUpMasterItem.html", $this->container);
     }
 
     public function stockOnHand()
